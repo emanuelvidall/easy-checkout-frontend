@@ -34,7 +34,6 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <TopBar />
           <SidebarProvider>
             <AppSidebar />
             <SidebarTrigger />
