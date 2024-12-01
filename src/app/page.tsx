@@ -1,16 +1,17 @@
 "use client";
 
 import { AddProductDialog } from "@/components/add-product-dialog";
-import { ProductCard } from "@/components/product-card";
-import { ProductCardGrid } from "@/components/product-card-grid";
+import { Product, ProductCardGrid } from "@/components/product-card-grid";
 import { Button } from "@/components/ui/button";
+import { scrollToTop } from "@/lib/utils";
 import { ProductService } from "@/services/product.service";
-import { CirclePlus, PackagePlus } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -18,13 +19,25 @@ export default function Home() {
       setProducts(data);
     }
 
+    scrollToTop();
+
     fetchProducts();
   }, []);
 
+  const handleAddProduct = (newProduct: Product) => {
+    setProducts((prevProducts) => [newProduct, ...prevProducts]);
+  };
+
   const handleDeleteProduct = async (productId: string) => {
     try {
+      setIsLoading(true);
+      setProducts((prevItems) =>
+        prevItems.filter((item) => item.id !== productId)
+      );
       const { data } = await ProductService.deleteProduct(productId);
       console.log(`Product deleted:`, data);
+
+      scrollToTop();
     } catch (error) {
       console.error("Error deleting product:", error);
     }
@@ -32,7 +45,12 @@ export default function Home() {
 
   return (
     <div className="p-4 w-full h-screen">
-      <AddProductDialog isOpen={isOpen} setIsOpen={setIsOpen} />
+      <AddProductDialog
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        isLoading={isLoading}
+        setProducts={handleAddProduct}
+      />
       <div className="flex w-full flex-col h-full">
         <div className="flex flex-row justify-between">
           <h1 className="text-3xl mb-8">Produtos</h1>
@@ -44,25 +62,12 @@ export default function Home() {
             <span className="text-white">Adicionar produto</span>
           </Button>
         </div>
-        {products.length == 0 ? (
-          <div className="flex-1 pb-32  items-center justify-center flex">
-            <div
-              onClick={() => setIsOpen(true)}
-              className="cursor-pointer p-4 rounded-lg flex flex-col items-center justify-center self-center text-center gap-8 border border-transparent hover:border-[#039ADC] transition-all ease-in-out duration-250"
-            >
-              <div className="p-4 rounded-full bg-[#039ADC]">
-                <PackagePlus stroke="white" />
-              </div>
-              Parece que você ainda não possui produtos registrados <br />
-              Clique aqui para registrar um novo produto
-            </div>
-          </div>
-        ) : (
-          <ProductCardGrid
-            products={products}
-            handleDeleteProduct={handleDeleteProduct}
-          />
-        )}
+
+        <ProductCardGrid
+          setIsOpen={setIsOpen}
+          products={products}
+          handleDeleteProduct={handleDeleteProduct}
+        />
       </div>
     </div>
   );

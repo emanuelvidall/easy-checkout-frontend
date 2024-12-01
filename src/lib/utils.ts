@@ -29,3 +29,10 @@ export const handleTextMaxLength = (
   }
   return value;
 };
+
+export const scrollToTop = (smooth: boolean = true): void => {
+  window.scrollTo({
+    top: 0,
+    behavior: smooth ? "smooth" : "auto",
+  });
+};

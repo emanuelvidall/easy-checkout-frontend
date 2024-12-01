@@ -54,7 +54,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           src={`${product.imageURL}` || "https://placehold.co/253x153"}
           width={253}
           height={153}
+          quality={75}
+          placeholder="blur"
+          blurDataURL="data:image/svg+xml;base64,...encoded-placeholder..."
           alt="banner do card"
+          loading="lazy"
         />
         <CardTitle>{nameElipsis(product.name)}</CardTitle>
         <CardDescription className="break-all">

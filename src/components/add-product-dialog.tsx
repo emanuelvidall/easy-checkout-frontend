@@ -41,6 +41,8 @@ type formType = {
 interface AddProductDialogComponentProps {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
+  isLoading: boolean;
+  setProducts: (value: any) => void;
 }
 
 const formSchema = z.object({
@@ -54,17 +56,32 @@ const formSchema = z.object({
     .string()
     .max(120, { message: "A descrição deve possuir no máximo 120 caracteres" }),
   imageFiles: z.array(z.instanceof(File)).optional(),
-  price: z.string().refine((value) => {
-    const numericValue = parseFloat(
-      value.replace(/[^\d,]/g, "").replace(",", ".")
-    );
-    return !isNaN(numericValue) && numericValue <= 999999;
-  }, "O preço deve ser um número válido e no máximo R$ 899.999,00"),
+  price: z
+    .string()
+    .refine(
+      (value) => {
+        const numericValue = parseFloat(
+          value.replace(/[^\d,]/g, "").replace(",", ".")
+        );
+        return numericValue >= 1;
+      },
+      { message: "O preço deve ser no mínimo R$ 1,00" }
+    )
+    .refine(
+      (value) => {
+        const numericValue = parseFloat(
+          value.replace(/[^\d,]/g, "").replace(",", ".")
+        );
+        return numericValue <= 999999;
+      },
+      { message: "O preço deve ser no máximo R$ 899.999,00" }
+    ),
 });
 
 export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
   isOpen,
   setIsOpen,
+  setProducts,
 }) => {
   const form = useForm<formType>({
     resolver: zodResolver(formSchema),
@@ -82,6 +99,10 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
         values.price.replace(/[^\d,]/g, "").replace(",", ".")
       );
 
+      if (price < 1) {
+        throw new Error("O preço deve ser no mínimo R$ 1,00");
+      }
+
       const productInput = {
         name: values.name,
         description: values.description,
@@ -94,24 +115,29 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
 
       console.log(productId, "created product id");
 
+      let imageUrl = "";
       if (values.imageFiles?.length) {
         const file = values.imageFiles[0];
         const uploadedImageUrl = await ProductService.uploadImage(
           file,
           productId
         );
-        const imageUrl = uploadedImageUrl.url;
 
-        console.log(uploadedImageUrl, "uploaded image url");
+        imageUrl = uploadedImageUrl.url;
 
-        const uploadResponse = await ProductService.updateProduct(productId, {
-          name: values.name,
-          description: values.description,
-          price,
+        await ProductService.updateProduct(productId, {
+          ...productInput,
           imageURL: imageUrl,
         });
-        console.log(uploadResponse, "upload response");
       }
+
+      const newProduct = {
+        ...productInput,
+        id: productId,
+        imageURL: imageUrl,
+      };
+
+      setProducts(newProduct);
 
       form.reset();
       setIsOpen(false);
