@@ -49,8 +49,11 @@ const removeButton = {
 
 export function FileDropzone({ field }) {
   const { getRootProps, getInputProps } = useDropzone({
+    maxFiles: 1,
+    maxSize: 5242880, // 5MB
     accept: {
-      "image/*": [],
+      "image/jpeg": [],
+      "image/png": [],
     },
     onDrop: (acceptedFiles) => {
       const fileWithPreview = acceptedFiles.map((file) =>

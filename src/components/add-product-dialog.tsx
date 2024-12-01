@@ -18,9 +18,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "./ui/separator";
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, Save } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { z } from "zod";
 import { FileDropzone } from "./file-dropzone";
 import {
@@ -31,6 +31,7 @@ import {
 import { Textarea } from "./ui/textarea";
 import { ProductService } from "@/services/product.service";
 import { toast } from "sonner";
+import { useState } from "react";
 
 type formType = {
   name: string;
@@ -93,6 +94,9 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
   product,
   onSave,
 }) => {
+  const [textAreaCharCount, setTextAreaCharCount] = useState(0);
+  const [isPosting, setIsPosting] = useState(false);
+
   const form = useForm<formType>({
     resolver: zodResolver(formSchema),
     defaultValues: product
@@ -111,6 +115,7 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsPosting(true);
     try {
       const price = parseFloat(
         values.price.replace(/[^\d,]/g, "").replace(",", ".")
@@ -155,6 +160,8 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
       });
 
       form.reset();
+      toast.success("Produto adicionado com sucesso!");
+      setIsPosting(false);
       setIsOpen(false);
     } catch (error) {
       console.error("Error saving product:", error);
@@ -213,28 +220,39 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
                 <FormItem>
                   <FormLabel>Descrição</FormLabel>
                   <FormControl>
-                    <Textarea
-                      className="h-32"
-                      placeholder="Descrição"
-                      {...field}
-                      onChange={(e) => {
-                        const truncatedValue = handleTextMaxLength(
-                          e.target.value,
-                          120
-                        );
-                        field.onChange(truncatedValue);
-                      }}
-                    />
+                    <div>
+                      <Textarea
+                        className="h-32 resize-none"
+                        placeholder="Descrição"
+                        {...field}
+                        onChange={(e) => {
+                          const truncatedValue = handleTextMaxLength(
+                            e.target.value,
+                            120
+                          );
+                          field.onChange(truncatedValue);
+                          setTextAreaCharCount(truncatedValue.length);
+                        }}
+                      />
+                      <p className="text-xs text-right">
+                        {textAreaCharCount}/120
+                      </p>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="imageFiles"
-              render={({ field }) => <FileDropzone field={field} />}
-            />
+            <div>
+              <FormField
+                control={form.control}
+                name="imageFiles"
+                render={({ field }) => <FileDropzone field={field} />}
+              />
+              <p className="text-xs opacity-50 self-end text-right mt-2">
+                Apenas arquivos *.jpeg e *.png. Tamanho máximo: 5mb
+              </p>
+            </div>
             <FormField
               control={form.control}
               name="price"
@@ -258,12 +276,23 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
                 </FormItem>
               )}
             />
-            <Button
-              className="w-full flex flex-row justify-between bg-[#039ADC] hover:bg-gray-500"
-              type="submit"
-            >
-              {product ? "Salvar alterações" : "Adicionar produto"}
-            </Button>
+            {product ? (
+              <Button
+                disabled={isPosting}
+                className="w-full flex flex-row justify-between bg-[#E4AF00] hover:bg-gray-500"
+                type="submit"
+              >
+                <p>Salvar alterações</p> <Save />
+              </Button>
+            ) : (
+              <Button
+                disabled={isPosting}
+                className="w-full flex flex-row justify-between bg-[#039ADC] hover:bg-gray-500"
+                type="submit"
+              >
+                <p>Adicionar produto</p> <CirclePlus />
+              </Button>
+            )}
           </form>
         </Form>
       </DialogContent>

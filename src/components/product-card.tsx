@@ -56,7 +56,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <Image
           className="max-h-[153px] object-cover rounded-sm"
           loader={myLoader}
-          src={`${product.imageURL}` || "https://placehold.co/253x153"}
+          src={`${product?.imageURL}` || "https://placehold.co/253x153"}
           width={253}
           height={153}
           quality={75}
