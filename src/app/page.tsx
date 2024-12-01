@@ -64,7 +64,6 @@ export default function Home() {
 
   return (
     <div className="p-4 w-full h-screen">
-      <Toaster richColors position="top-center" />
       <AddProductDialog
         isOpen={isOpen}
         setIsOpen={setIsOpen}

@@ -121,50 +121,64 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
         values.price.replace(/[^\d,]/g, "").replace(",", ".")
       );
 
+      let imageUrl = product?.imageURL || "";
+
       const productInput = {
         name: values.name,
         description: values.description,
         price,
-        imageURL: product?.imageURL || "",
+        imageURL: imageUrl,
       };
 
+      let productId = product?.id;
+
       if (product) {
-        await ProductService.updateProduct(product.id, productInput);
+        await ProductService.updateProduct(productId, productInput);
         console.log("Product updated successfully");
+        toast.success("Produto atualizado com sucesso!");
       } else {
         const productResponse = await ProductService.createProduct(
           productInput
         );
-        const productId = productResponse.id;
+        productId = productResponse.id;
 
-        if (values.imageFiles?.length) {
-          const file = values.imageFiles[0];
-          const uploadedImageUrl = await ProductService.uploadImage(
-            file,
-            productId
-          );
-          const imageUrl = uploadedImageUrl.url;
+        console.log(`Product created successfully with ID: ${productId}`);
+      }
 
+      if (values.imageFiles?.length && productId) {
+        const file = values.imageFiles[0];
+        const uploadedImageUrl = await ProductService.uploadImage(
+          file,
+          productId
+        );
+        imageUrl = uploadedImageUrl.url;
+
+        if (!product) {
           await ProductService.updateProduct(productId, {
             ...productInput,
             imageURL: imageUrl,
           });
         }
-
-        console.log("Product created successfully");
       }
 
       onSave({
-        id: product?.id || "temp-id",
+        id: productId,
         ...productInput,
+        imageURL: imageUrl,
       });
 
       form.reset();
-      toast.success("Produto adicionado com sucesso!");
-      setIsPosting(false);
       setIsOpen(false);
+      toast.success(
+        product
+          ? "Produto atualizado com sucesso!"
+          : "Produto adicionado com sucesso!"
+      );
     } catch (error) {
       console.error("Error saving product:", error);
+      toast.error("Erro ao salvar produto!");
+    } finally {
+      setIsPosting(false);
     }
   }
 

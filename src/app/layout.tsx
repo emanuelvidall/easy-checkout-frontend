@@ -36,7 +36,7 @@ export default function RootLayout({
         <SidebarProvider>
           <AppSidebar />
           <SidebarTrigger />
-          <Toaster />
+          <Toaster richColors position="top-center" />
           {children}
         </SidebarProvider>
         {/* </ThemeProvider> */}
