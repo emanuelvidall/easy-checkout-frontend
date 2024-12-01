@@ -41,7 +41,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <div className="flex flex-row justify-between px-2 items-center h-10 mt-4">
               <h1 className="font-bold">Menu</h1>
-              <ModeToggle />
+              {/* <ModeToggle /> */}
             </div>
             <Separator className="mt-4 mb-4" />
 

@@ -31,7 +31,7 @@ export default function Home() {
             onClick={() => setIsOpen(true)}
           >
             <CirclePlus stroke="white" />
-            <span className="text-white">Novo produto</span>
+            <span className="text-white">Adicionar produto</span>
           </Button>
         </div>
         {products.length == 0 && (

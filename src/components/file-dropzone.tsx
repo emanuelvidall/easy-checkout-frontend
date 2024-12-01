@@ -1,4 +1,4 @@
-import { Upload } from "lucide-react";
+import { Upload, XCircle } from "lucide-react"; // XCircle for the remove button
 import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -10,6 +10,7 @@ const thumbsContainer = {
 };
 
 const thumb = {
+  position: "relative", // Enable positioning for the remove button
   display: "inline-flex",
   borderRadius: 2,
   border: "1px solid #eaeaea",
@@ -23,14 +24,27 @@ const thumb = {
 
 const thumbInner = {
   display: "flex",
-  minWidth: 0,
+  alignItems: "center",
+  justifyContent: "center", // Center the thumbnail
+  width: "100%",
+  height: "100%",
   overflow: "hidden",
+  backgroundColor: "#f9f9f9", // Optional background for better contrast
 };
 
 const img = {
-  display: "block",
-  width: "auto",
-  height: "100%",
+  maxWidth: "100%",
+  maxHeight: "100%", // Ensure the image fits within the container
+};
+
+const removeButton = {
+  position: "absolute",
+  top: 4,
+  right: 4,
+  cursor: "pointer",
+  color: "#f44336", // Red color for remove
+  backgroundColor: "white", // Optional for better visibility
+  borderRadius: "50%",
 };
 
 export function FileDropzone(props) {
@@ -50,39 +64,56 @@ export function FileDropzone(props) {
     },
   });
 
+  const handleRemoveImage = () => {
+    // Remove all files
+    files.forEach((file) => URL.revokeObjectURL(file.preview)); // Clean up URLs
+    setFiles([]);
+  };
+
   const thumbs = files.map((file) => (
     <div style={thumb} key={file.name}>
       <div style={thumbInner}>
         <img
           src={file.preview}
           style={img}
-          // Revoke data uri after image is loaded
+          alt="Uploaded preview"
           onLoad={() => {
             URL.revokeObjectURL(file.preview);
           }}
         />
       </div>
+      {/* Remove Button */}
+      <XCircle
+        style={removeButton}
+        onClick={handleRemoveImage}
+        size={20}
+        title="Remove image"
+      />
     </div>
   ));
 
   useEffect(() => {
-    // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
+    // Clean up URLs on unmount
     return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
   }, [files]);
 
   return (
-    <section className=" flex flex-col container max-h-[127px] max-w-[375px] h-full w-full self-center bg-gray-200 items-center justify-center border-[#039ADC] border-2 border-dashed pt-6 cursor-pointer">
+    <section className="flex flex-col container max-h-[127px] max-w-[375px] h-full w-full self-center bg-gray-200 items-center justify-center border-[#039ADC] border-2 border-dashed cursor-pointer">
       <div
         {...getRootProps({
           className: "dropzone flex flex-col items-center justify-center",
         })}
       >
         <input {...getInputProps()} />
-        <Upload stroke="#039ADC" className="select-none" />
-        <p className="text-[#039ADC] select-none">Upload</p>
-        <p className="text-[#039ADC] select-none">
-          Arraste a imagem aqui <br /> ou clique para escolher
-        </p>
+        {!files.length && (
+          <>
+            <Upload stroke="#039ADC" className="select-none mt-6" />
+            <p className="text-[#039ADC] select-none">Upload</p>
+            <p className="text-[#039ADC] select-none">
+              Arraste a imagem aqui <br /> ou clique para escolher
+            </p>
+          </>
+        )}
       </div>
       <aside style={thumbsContainer}>{thumbs}</aside>
     </section>

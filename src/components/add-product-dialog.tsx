@@ -29,10 +29,25 @@ import { z } from "zod";
 import { useState } from "react";
 import { FileDropzone } from "./file-dropzone";
 
+interface formType {
+  name: string;
+  description: string;
+  price: number;
+}
+
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
+  name: z
+    .string()
+    .min(3, {
+      message: "O nome deve possuir pelo menos 3 caracteres",
+    })
+    .max(50, { message: "O nome deve possuir no máximo 50 caracteres" }),
+  price: z
+    .number({
+      invalid_type_error: "O preço deve ser um número válido",
+    })
+    .positive("O preço deve ser um número positivo")
+    .max(999999, { message: "O preço deve ser no máximo R$ 999.999" }),
 });
 
 export function AddProductDialog({ isOpen, setIsOpen }) {
@@ -40,13 +55,6 @@ export function AddProductDialog({ isOpen, setIsOpen }) {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
 
-  interface formType {
-    name: string;
-    description: string;
-    price: number;
-  }
-
-  // 1. Define your form.
   const form = useForm<formType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,7 +64,6 @@ export function AddProductDialog({ isOpen, setIsOpen }) {
     },
   });
 
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
@@ -67,9 +74,12 @@ export function AddProductDialog({ isOpen, setIsOpen }) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Criar produto</DialogTitle>
+          <DialogTitle>Adicionar produto</DialogTitle>
           <Separator />
         </DialogHeader>
+        <DialogDescription>
+          Aqui você pode adicionar produtos em seu estoque
+        </DialogDescription>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
@@ -108,7 +118,13 @@ export function AddProductDialog({ isOpen, setIsOpen }) {
                 <FormItem>
                   <FormLabel>Preço</FormLabel>
                   <FormControl>
-                    <Input placeholder="R$ 00.00" {...field} />
+                    <Input
+                      min={0}
+                      max={999999}
+                      type="number"
+                      placeholder="R$ 00.00"
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -119,7 +135,7 @@ export function AddProductDialog({ isOpen, setIsOpen }) {
               className="w-full flex flex-row justify-between bg-[#039ADC] hover:bg-gray-500"
               type="submit"
             >
-              Criar produto <CirclePlus />
+              Adicionar produto <CirclePlus />
             </Button>
           </form>
         </Form>
