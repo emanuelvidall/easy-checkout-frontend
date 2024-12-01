@@ -2,6 +2,7 @@
 
 import { AddProductDialog } from "@/components/add-product-dialog";
 import { ProductCard } from "@/components/product-card";
+import { ProductCardGrid } from "@/components/product-card-grid";
 import { Button } from "@/components/ui/button";
 import { ProductService } from "@/services/product.service";
 import { CirclePlus, PackagePlus } from "lucide-react";
@@ -57,15 +58,10 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                handleDeleteProduct={handleDeleteProduct}
-                product={product}
-              />
-            ))}
-          </div>
+          <ProductCardGrid
+            products={products}
+            handleDeleteProduct={handleDeleteProduct}
+          />
         )}
       </div>
     </div>

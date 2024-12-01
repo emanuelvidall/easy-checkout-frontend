@@ -17,7 +17,7 @@ interface ProductCardProps {
     name: string;
     description: string;
     price: number;
-    image: string;
+    imageURL: string;
   };
   handleDeleteProduct: (productId: string) => void;
 }
@@ -26,16 +26,40 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   handleDeleteProduct,
 }) => {
+  const myLoader = () => {
+    return `${product.imageURL}`;
+  };
+
+  const nameElipsis = (text: string) => {
+    if (text.length > 32) {
+      return `${text.slice(0, 32)}...`;
+    } else {
+      return text;
+    }
+  };
+  const descriptionElipsis = (text: string) => {
+    if (text.length > 36) {
+      return `${text.slice(0, 36)}...`;
+    } else {
+      return text;
+    }
+  };
+
   return (
     <Card className="max-w-[293px]">
       <CardHeader>
         <Image
-          className="max-w-[253px] rounded-sm"
-          src={Banner}
+          className="max-w-[253px] max-h-[153px] object-cover rounded-sm"
+          loader={myLoader}
+          src={`${product.imageURL}` || "https://placehold.co/253x153"}
+          width={253}
+          height={153}
           alt="banner do card"
         />
-        <CardTitle>{product.name}</CardTitle>
-        <CardDescription>{product.description} </CardDescription>
+        <CardTitle>{nameElipsis(product.name)}</CardTitle>
+        <CardDescription className="break-all">
+          {descriptionElipsis(product.description)}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
         <p>Link para checkout 🛒</p>
