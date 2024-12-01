@@ -1,6 +1,31 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
+
+export const handlePriceChange = (value: string, max: number): string => {
+  const numericValue = parseFloat(value.replace(/\D/g, "")) || 0;
+  if (numericValue > max) return formatToBrazilianCurrency(max.toString());
+  return formatToBrazilianCurrency(value);
+};
+
+export const formatToBrazilianCurrency = (value: string): string => {
+  const numericValue = value.replace(/\D/g, "");
+  const floatValue = parseFloat(numericValue) / 100;
+  return floatValue.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+};
+
+export const handleTextMaxLength = (
+  value: string,
+  maxLength: number
+): string => {
+  if (value.length > maxLength) {
+    return value.slice(0, maxLength);
+  }
+  return value;
+};

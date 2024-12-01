@@ -47,42 +47,33 @@ const removeButton = {
   borderRadius: "50%",
 };
 
-export function FileDropzone(props) {
-  const [files, setFiles] = useState([]);
+export function FileDropzone({ field }) {
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "image/*": [],
     },
     onDrop: (acceptedFiles) => {
-      setFiles(
-        acceptedFiles.map((file) =>
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          })
-        )
+      const fileWithPreview = acceptedFiles.map((file) =>
+        Object.assign(file, { preview: URL.createObjectURL(file) })
       );
+      field.onChange(fileWithPreview); // Update form state
     },
   });
 
   const handleRemoveImage = () => {
-    // Remove all files
-    files.forEach((file) => URL.revokeObjectURL(file.preview)); // Clean up URLs
-    setFiles([]);
+    field.onChange([]); // Clear files in form state
   };
 
-  const thumbs = files.map((file) => (
+  const thumbs = (field.value || []).map((file) => (
     <div style={thumb} key={file.name}>
       <div style={thumbInner}>
         <img
           src={file.preview}
           style={img}
-          alt="Uploaded preview"
-          onLoad={() => {
-            URL.revokeObjectURL(file.preview);
-          }}
+          alt="Preview"
+          onLoad={() => URL.revokeObjectURL(file.preview)}
         />
       </div>
-      {/* Remove Button */}
       <XCircle
         style={removeButton}
         onClick={handleRemoveImage}
@@ -92,11 +83,6 @@ export function FileDropzone(props) {
     </div>
   ));
 
-  useEffect(() => {
-    // Clean up URLs on unmount
-    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
-  }, [files]);
-
   return (
     <section className="flex flex-col container max-h-[127px] max-w-[375px] h-full w-full self-center bg-gray-200 items-center justify-center border-[#039ADC] border-2 border-dashed cursor-pointer">
       <div
@@ -105,7 +91,7 @@ export function FileDropzone(props) {
         })}
       >
         <input {...getInputProps()} />
-        {!files.length && (
+        {!field.value?.length && (
           <>
             <Upload stroke="#039ADC" className="select-none mt-6" />
             <p className="text-[#039ADC] select-none">Upload</p>
