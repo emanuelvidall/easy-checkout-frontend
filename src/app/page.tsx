@@ -13,6 +13,7 @@ export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -45,14 +46,30 @@ export default function Home() {
     }
   };
 
+  const handleSaveProduct = (updatedProduct: Product) => {
+    if (selectedProduct) {
+      setProducts((prev) =>
+        prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+      );
+    } else {
+      setProducts((prev) => [updatedProduct, ...prev]);
+    }
+    setSelectedProduct(null);
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setIsOpen(true);
+  };
+
   return (
     <div className="p-4 w-full h-screen">
       <Toaster richColors position="top-center" />
       <AddProductDialog
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        isLoading={isLoading}
-        setProducts={handleAddProduct}
+        product={selectedProduct}
+        onSave={handleSaveProduct}
       />
       <div className="flex w-full flex-col h-full">
         <div className="flex flex-row justify-between">
@@ -70,6 +87,7 @@ export default function Home() {
           setIsOpen={setIsOpen}
           products={products}
           handleDeleteProduct={handleDeleteProduct}
+          onEdit={handleEditProduct}
         />
       </div>
     </div>

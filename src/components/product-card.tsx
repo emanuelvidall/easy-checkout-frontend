@@ -10,6 +10,7 @@ import { Button } from "./ui/button";
 import Image from "next/image";
 import Banner from "../../public/temp/card-test-banner.png";
 import Link from "next/link";
+import { Product } from "./product-card-grid";
 
 interface ProductCardProps {
   product: {
@@ -20,11 +21,13 @@ interface ProductCardProps {
     imageURL: string;
   };
   handleDeleteProduct: (productId: string) => void;
+  onEdit: (product: Product) => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   handleDeleteProduct,
+  onEdit,
 }) => {
   const myLoader = () => {
     return `${product.imageURL}`;
@@ -81,7 +84,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
       </CardContent>
       <CardFooter className="flex flex-row justify-between gap-4 items-center">
-        <Button className="bg-[#E4AF00] w-1/2">Editar</Button>
+        <Button className="bg-[#E4AF00] w-1/2" onClick={() => onEdit(product)}>
+          Editar
+        </Button>
         <Button
           onClick={() => handleDeleteProduct(product.id)}
           className="w-1/2"

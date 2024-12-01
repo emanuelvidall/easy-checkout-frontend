@@ -13,12 +13,14 @@ interface ProductCardGridProps {
   products: Product[];
   handleDeleteProduct: (productId: string) => void;
   setIsOpen: (isOpen: boolean) => void;
+  onEdit: (product: Product) => void;
 }
 
 export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
   products,
   handleDeleteProduct,
   setIsOpen,
+  onEdit,
 }) => {
   const noProducts = (
     <div className="flex-1 pb-32  items-center justify-center flex">
@@ -44,8 +46,9 @@ export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
           {products.map((product) => (
             <ProductCard
               key={product.id}
-              handleDeleteProduct={handleDeleteProduct}
               product={product}
+              handleDeleteProduct={handleDeleteProduct}
+              onEdit={onEdit}
             />
           ))}
         </div>

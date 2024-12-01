@@ -44,6 +44,14 @@ interface AddProductDialogComponentProps {
   setIsOpen: (value: boolean) => void;
   isLoading: boolean;
   setProducts: (value: any) => void;
+  product?: {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    imageURL: string;
+  };
+  onSave: (product: any) => void;
 }
 
 const formSchema = z.object({
@@ -82,16 +90,24 @@ const formSchema = z.object({
 export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
   isOpen,
   setIsOpen,
-  setProducts,
+  product,
+  onSave,
 }) => {
   const form = useForm<formType>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      price: formatToBrazilianCurrency("0"),
-      imageFiles: [],
-    },
+    defaultValues: product
+      ? {
+          name: product.name,
+          description: product.description,
+          price: formatToBrazilianCurrency(product.price.toString()),
+          imageFiles: [],
+        }
+      : {
+          name: "",
+          description: "",
+          price: formatToBrazilianCurrency("0"),
+          imageFiles: [],
+        },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -100,54 +116,48 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
         values.price.replace(/[^\d,]/g, "").replace(",", ".")
       );
 
-      if (price < 1) {
-        throw new Error("O preço deve ser no mínimo R$ 1,00");
-      }
-
       const productInput = {
         name: values.name,
         description: values.description,
         price,
-        imageURL: "",
+        imageURL: product?.imageURL || "",
       };
 
-      const productResponse = await ProductService.createProduct(productInput);
-      const productId = productResponse.id;
-
-      console.log(productId, "created product id");
-
-      let imageUrl = "";
-      if (values.imageFiles?.length) {
-        const file = values.imageFiles[0];
-        const uploadedImageUrl = await ProductService.uploadImage(
-          file,
-          productId
+      if (product) {
+        await ProductService.updateProduct(product.id, productInput);
+        console.log("Product updated successfully");
+      } else {
+        const productResponse = await ProductService.createProduct(
+          productInput
         );
+        const productId = productResponse.id;
 
-        imageUrl = uploadedImageUrl.url;
+        if (values.imageFiles?.length) {
+          const file = values.imageFiles[0];
+          const uploadedImageUrl = await ProductService.uploadImage(
+            file,
+            productId
+          );
+          const imageUrl = uploadedImageUrl.url;
 
-        await ProductService.updateProduct(productId, {
-          ...productInput,
-          imageURL: imageUrl,
-        });
+          await ProductService.updateProduct(productId, {
+            ...productInput,
+            imageURL: imageUrl,
+          });
+        }
+
+        console.log("Product created successfully");
       }
 
-      const newProduct = {
+      onSave({
+        id: product?.id || "temp-id",
         ...productInput,
-        id: productId,
-        imageURL: imageUrl,
-      };
-
-      setProducts(newProduct);
+      });
 
       form.reset();
-      toast.success("Produto criado com sucesso!");
       setIsOpen(false);
-
-      console.log("product created");
     } catch (error) {
-      toast.error("Erro ao adicionar produto");
-      console.error("Error adding product", error);
+      console.error("Error saving product:", error);
     }
   }
 
@@ -161,11 +171,15 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
     >
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-left">Adicionar produto</DialogTitle>
+          <DialogTitle className="text-left">
+            {product ? "Editar produto" : "Adicionar produto"}
+          </DialogTitle>
           <Separator />
         </DialogHeader>
         <DialogDescription>
-          Aqui você pode adicionar produtos em seu estoque
+          {product
+            ? "Edite as informações do produto selecionado"
+            : "Aqui você pode adicionar produtos em seu estoque"}
         </DialogDescription>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -248,7 +262,7 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
               className="w-full flex flex-row justify-between bg-[#039ADC] hover:bg-gray-500"
               type="submit"
             >
-              Adicionar produto <CirclePlus />
+              {product ? "Salvar alterações" : "Adicionar produto"}
             </Button>
           </form>
         </Form>
