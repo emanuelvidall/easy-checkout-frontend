@@ -27,6 +27,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
+import { FileDropzone } from "./file-dropzone";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -99,6 +100,7 @@ export function AddProductDialog({ isOpen, setIsOpen }) {
                 </FormItem>
               )}
             />
+            <FileDropzone />
             <FormField
               control={form.control}
               name="price"
