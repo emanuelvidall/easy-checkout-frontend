@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "./ui/separator";
 import { CirclePlus, Save } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { FileDropzone } from "./file-dropzone";
 import {
@@ -31,7 +31,8 @@ import {
 import { Textarea } from "./ui/textarea";
 import { ProductService } from "@/services/product.service";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Product } from "./product-card-grid";
 
 type formType = {
   name: string;
@@ -44,7 +45,7 @@ interface AddProductDialogComponentProps {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
   isLoading: boolean;
-  setProducts: (value: any) => void;
+  setProducts: (value: Product[]) => void;
   product?: {
     id: string;
     name: string;
@@ -52,24 +53,19 @@ interface AddProductDialogComponentProps {
     price: number;
     imageURL: string;
   };
-  onSave: (product: any) => void;
+  onSave: (product: Product) => void;
 }
 
 const formSchema = z.object({
-  name: z
-    .string()
-    .min(3, {
-      message: "O nome deve possuir pelo menos 3 caracteres",
-    })
-    .max(50, { message: "O nome deve possuir no máximo 50 caracteres" }),
-  description: z
-    .string()
-    .max(120, { message: "A descrição deve possuir no máximo 120 caracteres" }),
+  name: z.string().optional(),
+  description: z.string().optional(),
   imageFiles: z.array(z.instanceof(File)).optional(),
   price: z
     .string()
+    .optional()
     .refine(
       (value) => {
+        if (!value) return true;
         const numericValue = parseFloat(
           value.replace(/[^\d,]/g, "").replace(",", ".")
         );
@@ -79,6 +75,7 @@ const formSchema = z.object({
     )
     .refine(
       (value) => {
+        if (!value) return true;
         const numericValue = parseFloat(
           value.replace(/[^\d,]/g, "").replace(",", ".")
         );
@@ -94,16 +91,16 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
   product,
   onSave,
 }) => {
-  const [textAreaCharCount, setTextAreaCharCount] = useState(0);
   const [isPosting, setIsPosting] = useState(false);
+  const [textAreaCharCount, setTextAreaCharCount] = useState(0);
 
   const form = useForm<formType>({
     resolver: zodResolver(formSchema),
     defaultValues: product
       ? {
-          name: product.name,
-          description: product.description,
-          price: formatToBrazilianCurrency(product.price.toString()),
+          name: product.name || "",
+          description: product.description || "",
+          price: formatToBrazilianCurrency(product.price?.toString() || "0"),
           imageFiles: [],
         }
       : {
@@ -114,19 +111,30 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
         },
   });
 
+  useEffect(() => {
+    if (product) {
+      form.reset({
+        name: product.name || "",
+        description: product.description || "",
+        price: formatToBrazilianCurrency(product.price?.toString() || "0"),
+        imageFiles: [],
+      });
+    }
+  }, [product, form]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsPosting(true);
     try {
-      const price = parseFloat(
-        values.price.replace(/[^\d,]/g, "").replace(",", ".")
-      );
+      const price = values.price
+        ? parseFloat(values.price.replace(/[^\d,]/g, "").replace(",", "."))
+        : undefined;
 
       let imageUrl = product?.imageURL || "";
 
       const productInput = {
-        name: values.name,
-        description: values.description,
-        price,
+        name: values.name || "",
+        description: values.description || "",
+        price: price || 0,
         imageURL: imageUrl,
       };
 
@@ -134,7 +142,6 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
 
       if (product) {
         await ProductService.updateProduct(productId, productInput);
-        console.log("Product updated successfully");
         toast.success("Produto atualizado com sucesso!");
       } else {
         const productResponse = await ProductService.createProduct(
@@ -143,6 +150,7 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
         productId = productResponse.id;
 
         console.log(`Product created successfully with ID: ${productId}`);
+        toast.success("Produto adicionado com sucesso!");
       }
 
       if (values.imageFiles?.length && productId) {
@@ -169,11 +177,6 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
 
       form.reset();
       setIsOpen(false);
-      toast.success(
-        product
-          ? "Produto atualizado com sucesso!"
-          : "Produto adicionado com sucesso!"
-      );
     } catch (error) {
       console.error("Error saving product:", error);
       toast.error("Erro ao salvar produto!");

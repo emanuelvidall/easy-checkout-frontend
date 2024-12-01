@@ -32,14 +32,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
       <body>
-        {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem> */}
         <SidebarProvider>
           <AppSidebar />
           <SidebarTrigger />
           <Toaster richColors position="top-center" />
           {children}
         </SidebarProvider>
-        {/* </ThemeProvider> */}
       </body>
     </html>
   );
