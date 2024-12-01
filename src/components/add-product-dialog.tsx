@@ -30,6 +30,7 @@ import {
 } from "@/lib/utils";
 import { Textarea } from "./ui/textarea";
 import { ProductService } from "@/services/product.service";
+import { toast } from "sonner";
 
 type formType = {
   name: string;
@@ -140,10 +141,12 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
       setProducts(newProduct);
 
       form.reset();
+      toast.success("Produto criado com sucesso!");
       setIsOpen(false);
 
       console.log("product created");
     } catch (error) {
+      toast.error("Erro ao adicionar produto");
       console.error("Error adding product", error);
     }
   }

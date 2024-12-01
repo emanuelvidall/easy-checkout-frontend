@@ -45,11 +45,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
 
+  const price = product.price.toLocaleString("pt-BR");
+
   return (
-    <Card className="max-w-[293px]">
-      <CardHeader>
+    <Card className="max-w-[293px] justify-between flex flex-col">
+      <CardHeader className="min-h-[246px]">
         <Image
-          className="max-w-[253px] max-h-[153px] object-cover rounded-sm"
+          className="max-h-[153px] object-cover rounded-sm"
           loader={myLoader}
           src={`${product.imageURL}` || "https://placehold.co/253x153"}
           width={253}
@@ -60,8 +62,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           alt="banner do card"
           loading="lazy"
         />
-        <CardTitle>{nameElipsis(product.name)}</CardTitle>
-        <CardDescription className="break-all">
+        <CardTitle className="flex flex-row justify-between items-start min-h-[48px]">
+          <div className="w-7/12 break-all">
+            <p className="text-[#101827]">{nameElipsis(product.name)}</p>
+          </div>
+          <div className="flex flex-col justify-center">
+            <p className="text-sm font-bold opacity-60">R$ {price}</p>
+          </div>
+        </CardTitle>
+        <CardDescription className="break-all min-h-[40px]">
           {descriptionElipsis(product.description)}
         </CardDescription>
       </CardHeader>

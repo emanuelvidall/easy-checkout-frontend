@@ -84,7 +84,7 @@ export function FileDropzone({ field }) {
   ));
 
   return (
-    <section className="flex flex-col container max-h-[127px] max-w-[375px] h-full w-full self-center bg-gray-200 items-center justify-center border-[#039ADC] border-2 border-dashed cursor-pointer">
+    <section className="flex flex-col container max-h-[127px] h-full w-full self-center bg-gray-200 items-center justify-center border-[#039ADC] border-2 border-dashed cursor-pointer">
       <div
         {...getRootProps({
           className: "dropzone flex flex-col items-center justify-center",

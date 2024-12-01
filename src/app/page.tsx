@@ -7,6 +7,7 @@ import { scrollToTop } from "@/lib/utils";
 import { ProductService } from "@/services/product.service";
 import { CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast, Toaster } from "sonner";
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,15 +37,17 @@ export default function Home() {
       );
       const { data } = await ProductService.deleteProduct(productId);
       console.log(`Product deleted:`, data);
-
+      toast.success("Produto deletado com sucesso!");
       scrollToTop();
     } catch (error) {
+      toast.error("Erro ao deletar produto!");
       console.error("Error deleting product:", error);
     }
   };
 
   return (
     <div className="p-4 w-full h-screen">
+      <Toaster richColors position="top-center" />
       <AddProductDialog
         isOpen={isOpen}
         setIsOpen={setIsOpen}
