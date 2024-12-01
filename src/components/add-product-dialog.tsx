@@ -91,9 +91,9 @@ export function AddProductDialog({ isOpen, setIsOpen }) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome do produto</FormLabel>
+                  <FormLabel>Descrição</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nome" {...field} />
+                    <Input placeholder="Descrição" {...field} />
                   </FormControl>
 
                   <FormMessage />

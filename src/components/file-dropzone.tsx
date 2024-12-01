@@ -1,3 +1,4 @@
+import { Upload } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -70,10 +71,18 @@ export function FileDropzone(props) {
   }, [files]);
 
   return (
-    <section className="container">
-      <div {...getRootProps({ className: "dropzone" })}>
+    <section className=" flex flex-col container max-h-[127px] max-w-[375px] h-full w-full self-center bg-gray-200 items-center justify-center border-[#039ADC] border-2 border-dashed pt-6 cursor-pointer">
+      <div
+        {...getRootProps({
+          className: "dropzone flex flex-col items-center justify-center",
+        })}
+      >
         <input {...getInputProps()} />
-        <p>Drag 'n' drop some files here, or click to select files</p>
+        <Upload stroke="#039ADC" className="select-none" />
+        <p className="text-[#039ADC] select-none">Upload</p>
+        <p className="text-[#039ADC] select-none">
+          Arraste a imagem aqui <br /> ou clique para escolher
+        </p>
       </div>
       <aside style={thumbsContainer}>{thumbs}</aside>
     </section>
