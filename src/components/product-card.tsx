@@ -11,7 +11,21 @@ import Image from "next/image";
 import Banner from "../../public/temp/card-test-banner.png";
 import Link from "next/link";
 
-export const ProductCard = () => {
+interface ProductCardProps {
+  product: {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+  };
+  handleDeleteProduct: (productId: string) => void;
+}
+
+export const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  handleDeleteProduct,
+}) => {
   return (
     <Card className="max-w-[293px]">
       <CardHeader>
@@ -20,8 +34,8 @@ export const ProductCard = () => {
           src={Banner}
           alt="banner do card"
         />
-        <CardTitle>Produto 1</CardTitle>
-        <CardDescription>Lorem ipsum etc tallis quantitative </CardDescription>
+        <CardTitle>{product.name}</CardTitle>
+        <CardDescription>{product.description} </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
         <p>Link para checkout 🛒</p>
@@ -29,9 +43,15 @@ export const ProductCard = () => {
           <Link href={"/"}> link.com </Link>
         </div>
       </CardContent>
-      <CardFooter>
-        <Button style={{ backgroundColor: "#E4AF00" }}>Editar</Button>
-        <Button variant="destructive">Excluir</Button>
+      <CardFooter className="flex flex-row justify-between gap-4 items-center">
+        <Button className="bg-[#E4AF00] w-1/2">Editar</Button>
+        <Button
+          onClick={() => handleDeleteProduct(product.id)}
+          className="w-1/2"
+          variant="destructive"
+        >
+          Excluir
+        </Button>
       </CardFooter>
     </Card>
   );

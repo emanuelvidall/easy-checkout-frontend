@@ -10,7 +10,7 @@ const thumbsContainer = {
 };
 
 const thumb = {
-  position: "relative", // Enable positioning for the remove button
+  position: "relative",
   display: "inline-flex",
   borderRadius: 2,
   border: "1px solid #eaeaea",
@@ -25,16 +25,16 @@ const thumb = {
 const thumbInner = {
   display: "flex",
   alignItems: "center",
-  justifyContent: "center", // Center the thumbnail
+  justifyContent: "center",
   width: "100%",
   height: "100%",
   overflow: "hidden",
-  backgroundColor: "#f9f9f9", // Optional background for better contrast
+  backgroundColor: "#f9f9f9",
 };
 
 const img = {
   maxWidth: "100%",
-  maxHeight: "100%", // Ensure the image fits within the container
+  maxHeight: "100%",
 };
 
 const removeButton = {
@@ -42,8 +42,8 @@ const removeButton = {
   top: 4,
   right: 4,
   cursor: "pointer",
-  color: "#f44336", // Red color for remove
-  backgroundColor: "white", // Optional for better visibility
+  color: "#f44336",
+  backgroundColor: "white",
   borderRadius: "50%",
 };
 
@@ -56,12 +56,12 @@ export function FileDropzone({ field }) {
       const fileWithPreview = acceptedFiles.map((file) =>
         Object.assign(file, { preview: URL.createObjectURL(file) })
       );
-      field.onChange(fileWithPreview); // Update form state
+      field.onChange(fileWithPreview);
     },
   });
 
   const handleRemoveImage = () => {
-    field.onChange([]); // Clear files in form state
+    field.onChange([]);
   };
 
   const thumbs = (field.value || []).map((file) => (

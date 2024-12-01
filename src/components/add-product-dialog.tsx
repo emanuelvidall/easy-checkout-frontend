@@ -29,13 +29,14 @@ import {
   handleTextMaxLength,
 } from "@/lib/utils";
 import { Textarea } from "./ui/textarea";
+import { ProductService } from "@/services/product.service";
 
-interface formType {
+type formType = {
   name: string;
   description: string;
-  imageFiles: File[];
   price: string;
-}
+  imageFiles?: File[];
+};
 
 interface AddProductDialogComponentProps {
   isOpen: boolean;
@@ -52,9 +53,7 @@ const formSchema = z.object({
   description: z
     .string()
     .max(120, { message: "A descrição deve possuir no máximo 120 caracteres" }),
-  imageFiles: z
-    .array(z.object({ name: z.string(), preview: z.string() }))
-    .optional(),
+  imageFiles: z.array(z.instanceof(File)).optional(),
   price: z.string().refine((value) => {
     const numericValue = parseFloat(
       value.replace(/[^\d,]/g, "").replace(",", ".")
@@ -77,18 +76,50 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const price = parseFloat(
-      values.price.replace(/[^\d,]/g, "").replace(",", ".")
-    );
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const price = parseFloat(
+        values.price.replace(/[^\d,]/g, "").replace(",", ".")
+      );
 
-    const formattedValues = {
-      ...values,
-      price,
-    };
-    console.log(formattedValues);
-    form.reset();
-    setIsOpen(false);
+      const productInput = {
+        name: values.name,
+        description: values.description,
+        price,
+        imageURL: "",
+      };
+
+      const productResponse = await ProductService.createProduct(productInput);
+      const productId = productResponse.id;
+
+      console.log(productId, "created product id");
+
+      if (values.imageFiles?.length) {
+        const file = values.imageFiles[0];
+        const uploadedImageUrl = await ProductService.uploadImage(
+          file,
+          productId
+        );
+        const imageUrl = uploadedImageUrl.url;
+
+        console.log(uploadedImageUrl, "uploaded image url");
+
+        const uploadResponse = await ProductService.updateProduct(productId, {
+          name: values.name,
+          description: values.description,
+          price,
+          imageURL: imageUrl,
+        });
+        console.log(uploadResponse, "upload response");
+      }
+
+      form.reset();
+      setIsOpen(false);
+
+      console.log("product created");
+    } catch (error) {
+      console.error("Error adding product", error);
+    }
   }
 
   return (

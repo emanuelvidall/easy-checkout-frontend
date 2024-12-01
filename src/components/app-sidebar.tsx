@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { ChevronsUpDown } from "lucide-react";
-import { ModeToggle } from "./mode-toggle";
 import { Separator } from "./ui/separator";
 import Link from "next/link";
 
