@@ -4,6 +4,7 @@ import { Product } from "@/components/product-card-grid";
 import {
   CREATE_PRODUCT,
   DELETE_PRODUCT,
+  GET_PRODUCT_BY_ID,
   GET_PRODUCTS,
   UPDATE_PRODUCT,
 } from "@/graphql/mutations/product-mutations";
@@ -17,9 +18,12 @@ export class ProductService {
   }
 
   static async getProductById(productId: string) {
-    console.log("calling");
-    const products = await this.getProducts();
-    return products.find((product: Product) => product.id === productId);
+    const { data } = await client.query({
+      query: GET_PRODUCT_BY_ID,
+      variables: { id: productId },
+      fetchPolicy: "network-only",
+    });
+    return data.getProductById;
   }
 
   static async uploadImage(file: File, productId: string) {

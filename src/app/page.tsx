@@ -19,10 +19,9 @@ export default function Home() {
     async function fetchProducts() {
       const data = await ProductService.getProducts();
       setProducts(data);
+      setIsLoading(false);
     }
-
     scrollToTop();
-
     fetchProducts();
   }, []);
 
@@ -86,6 +85,7 @@ export default function Home() {
         </div>
 
         <ProductCardGrid
+          isLoading={isLoading}
           setIsOpen={setIsOpen}
           products={products}
           handleDeleteProduct={handleDeleteProduct}

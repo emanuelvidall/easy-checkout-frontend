@@ -37,6 +37,18 @@ export const UPDATE_PRODUCT = gql`
   }
 `;
 
+export const GET_PRODUCT_BY_ID = gql`
+  query GetProductById($id: String!) {
+    getProductById(id: $id) {
+      id
+      name
+      description
+      price
+      createdAt
+    }
+  }
+`;
+
 export const DELETE_PRODUCT = gql`
   mutation deleteProduct($productId: ID!) {
     deleteProduct(productId: $productId)
