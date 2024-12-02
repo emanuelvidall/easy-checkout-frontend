@@ -35,6 +35,7 @@ export default function Home() {
       console.log(`Product deleted:`, data);
       toast.success("Produto deletado com sucesso!");
       scrollToTop();
+      setIsLoading(false);
     } catch (error) {
       toast.error("Erro ao deletar produto!");
       console.error("Error deleting product:", error);
