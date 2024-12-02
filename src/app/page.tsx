@@ -75,7 +75,10 @@ export default function Home() {
           <h1 className="text-3xl mb-8">Produtos</h1>
           <Button
             className="bg-[#039ADC] hover:bg-gray-500"
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+              setIsOpen(true);
+              setSelectedProduct(null);
+            }}
           >
             <CirclePlus stroke="white" />
             <span className="text-white">Adicionar produto</span>

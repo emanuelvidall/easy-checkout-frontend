@@ -112,11 +112,19 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
   });
 
   useEffect(() => {
+    console.log(product, "product");
     if (product) {
       form.reset({
         name: product.name || "",
         description: product.description || "",
         price: formatToBrazilianCurrency(product.price?.toString() || "0"),
+        imageFiles: [],
+      });
+    } else {
+      form.reset({
+        name: "",
+        description: "",
+        price: formatToBrazilianCurrency("0"),
         imageFiles: [],
       });
     }
