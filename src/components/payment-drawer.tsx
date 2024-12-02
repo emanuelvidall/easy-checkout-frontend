@@ -24,8 +24,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CreditCard } from "lucide-react";
+import Image from "next/image";
 
-export function PaymentDrawer({ open, setOpen }) {
+interface PaymentDrawerProps {
+  open: boolean;
+  setOpen: (value: boolean) => void;
+  paymentData: {
+    id: string;
+    qrCode: string;
+    qrCodeImage: string;
+  };
+}
+
+export function PaymentDrawer({
+  open,
+  setOpen,
+  paymentData,
+}: PaymentDrawerProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isDesktop) {
@@ -53,7 +68,7 @@ export function PaymentDrawer({ open, setOpen }) {
             Aponte seu celular para o código abaixo para realizar o pagamento
           </DrawerDescription>
         </DrawerHeader>
-        <ProfileForm className="px-4" />
+        <ProfileForm className="px-4" paymentData={paymentData} />
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Fechar</Button>
@@ -64,10 +79,15 @@ export function PaymentDrawer({ open, setOpen }) {
   );
 }
 
-function ProfileForm({ className }: React.ComponentProps<"form">) {
+function ProfileForm({ className, paymentData }) {
   return (
     <div className="w-[355px] h-[290px] border-2 border-dashed rounded-md border-slate-500 flex items-center justify-center">
-      <div>qrcode</div>
+      <div>
+        <Image
+          src={`data:image/png;base64,${paymentData.qrCodeImage}`}
+          alt="QR Code"
+        />
+      </div>
     </div>
   );
 }

@@ -12,6 +12,19 @@ export const checkoutSchema = z.object({
   telefone: z
     .string()
     .regex(/^\(\d{2}\) \d{4,5}-\d{4}$/, { message: "Telefone inválido" }),
+  price: z
+    .string()
+    .optional()
+    .refine(
+      (value) => {
+        if (!value) return true;
+        const numericValue = parseFloat(
+          value.replace(/[^\d,]/g, "").replace(",", ".")
+        );
+        return numericValue >= 1;
+      },
+      { message: "O preço deve ser no mínimo R$ 1,00" }
+    ),
 });
 
 export const addProductFormSchema = z.object({

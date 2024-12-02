@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/tooltip";
 import { CreditCard, Loader2, Lock } from "lucide-react";
 import Image from "next/image";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { checkoutSchema } from "@/lib/validation";
 import { z } from "zod";
@@ -35,6 +35,7 @@ import {
   enforcePhoneMaxLength,
   handleTextMaxLength,
 } from "@/lib/utils";
+import axiosInstance from "@/lib/axios-instance";
 
 type CheckoutFormType = z.infer<typeof checkoutSchema>;
 
@@ -44,6 +45,27 @@ export default function CheckoutPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [paymentData, setPaymentData] = useState<{
+    id: string;
+    qrCode: string;
+    qrCodeImage: string;
+  } | null>(null);
+
+  const createPaymentUrl = "/payment/create";
+
+  async function createPayment(details: {
+    name: string;
+    cpf: string;
+    email: string;
+    phone: string;
+  }) {
+    try {
+      const response = await axiosInstance.post(createPaymentUrl, details);
+      setPaymentData(response.data.payment);
+    } catch (error) {
+      console.error("Error creating payment:", error);
+    }
+  }
 
   const form = useForm<CheckoutFormType>({
     resolver: zodResolver(checkoutSchema),
@@ -55,24 +77,20 @@ export default function CheckoutPage() {
     },
   });
 
-  async function onSubmit(values: CheckoutFormType) {
+  const onSubmit = async (values: CheckoutFormType) => {
     try {
-      setIsSubmitting(true);
-      const order = await OrderService.createOrder({
-        customerName: values.nome,
-        customerPhone: values.telefone,
-        customerCPF: values.cpf,
-        customerEmail: values.email,
-        productId: productId,
-        paymentMethod: "PIX",
-        status: "PENDING",
+      createPayment({
+        name: values.nome,
+        cpf: values.cpf,
+        email: values.email,
+        phone: values.telefone,
       });
       setIsOpen(true);
     } catch (error) {
       console.error("Failed to create order:", error);
       toast.error("Falha ao realizar a compra");
     }
-  }
+  };
 
   useEffect(() => {
     async function fetchProduct() {
@@ -86,7 +104,11 @@ export default function CheckoutPage() {
 
   return (
     <div className="py-4 w-full h-screen flex items-center justify-center pr-[27px]">
-      <PaymentDrawer open={isOpen} setOpen={setIsOpen} />
+      <PaymentDrawer
+        open={isOpen}
+        setOpen={setIsOpen}
+        paymentData={paymentData}
+      />
       <div className="flex w-full justify-center items-center bg-[#ebecf1] rounded-lg p-8">
         <div className="bg-white max-w-[385px] h-full rounded-xl p-8">
           <h1 className="text-2xl">Dados da Compra</h1>

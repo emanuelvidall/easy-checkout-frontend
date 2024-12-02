@@ -1,5 +1,6 @@
 import client from "@/lib/apollo-client";
 import { CREATE_ORDER, GET_ORDERS } from "@/graphql/mutations/order-mutations";
+import axiosInstance from "@/lib/axios-instance";
 
 interface CreateOrderInput {
   customerName: string;
@@ -24,6 +25,8 @@ interface Order {
     price: number;
   };
 }
+
+const paymentEndpoint = "/payment/create";
 
 export const OrderService = {
   async createOrder(input: CreateOrderInput): Promise<Order> {
