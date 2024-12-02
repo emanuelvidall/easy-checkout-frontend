@@ -10,19 +10,16 @@ interface CreateOrderInput {
   paymentMethod: string;
   status: "APPROVED" | "PENDING";
 }
-
-interface Order {
+export interface Order {
   id: string;
+  productId: string;
   customerName: string;
-  status: string;
+  customerPhone: string;
+  customerCPF: string;
+  customerEmail: string;
   paymentMethod: string;
+  status: string;
   createdAt: string;
-  product: {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-  };
 }
 
 // const paymentEndpoint = "/payment/create";

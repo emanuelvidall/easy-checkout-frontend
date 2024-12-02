@@ -26,7 +26,7 @@ const items = [
   },
   {
     title: "Vendas",
-    url: "/vendas",
+    url: "/orders",
     icon: ChartNoAxesCombined,
   },
 ];
