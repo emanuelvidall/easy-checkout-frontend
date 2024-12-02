@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -14,14 +13,13 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
 import Image from "next/image";
+import { CheckCircle } from "lucide-react";
 import { PaymentService } from "@/services/payment.service";
-import { toast } from "sonner";
 
 interface PaymentDrawerProps {
   open: boolean;
@@ -42,7 +40,7 @@ export function PaymentDrawer({
   const [status, setStatus] = useState<string>("PENDING");
 
   useEffect(() => {
-    if (!paymentData?.id || status === "APPROVED") return;
+    if (!paymentData?.id || status === "approved") return;
 
     const pollPaymentStatus = async () => {
       try {
@@ -51,17 +49,15 @@ export function PaymentDrawer({
         );
         setStatus(newStatus);
 
-        if (newStatus === "APPROVED") {
-          toast.success("Pagamento aprovado com sucesso!");
-          setOpen(false); // Optionally close the drawer
+        if (newStatus === "approved") {
+          setOpen(true);
         }
       } catch (error) {
         console.error("Error polling payment status:", error);
       }
     };
 
-    const interval = setInterval(pollPaymentStatus, 2500);
-
+    const interval = setInterval(pollPaymentStatus, 5000);
     return () => clearInterval(interval);
   }, [paymentData?.id, status, setOpen]);
 
@@ -94,17 +90,27 @@ export function PaymentDrawer({
     );
   };
 
+  const SuccessMessage = () => (
+    <div className="flex flex-col items-center justify-center space-y-4">
+      <CheckCircle className="text-green-500 w-16 h-16" />
+      <p className="text-lg font-semibold text-green-600">
+        Pagamento aprovado com sucesso!
+      </p>
+    </div>
+  );
+
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px] flex flex-col justify-center items-center">
           <DialogHeader>
-            <DialogTitle>QR-Code Pagamento PIX</DialogTitle>
-            <DialogDescription>
-              Aponte seu celular para o código abaixo para realizar o pagamento
-            </DialogDescription>
+            <DialogTitle>
+              {status === "approved"
+                ? "Pagamento Concluído"
+                : "QR-Code Pagamento PIX"}
+            </DialogTitle>
           </DialogHeader>
-          <QRCodeBox />
+          {status === "approved" ? <SuccessMessage /> : <QRCodeBox />}
         </DialogContent>
       </Dialog>
     );
@@ -112,14 +118,15 @@ export function PaymentDrawer({
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerContent className=" flex flex-col justify-center items-center">
+      <DrawerContent className="flex flex-col justify-center items-center">
         <DrawerHeader className="text-left">
-          <DrawerTitle>QR-Code Pagamento PIX</DrawerTitle>
-          <DrawerDescription>
-            Aponte seu celular para o código abaixo para realizar o pagamento
-          </DrawerDescription>
+          <DrawerTitle>
+            {status === "approved"
+              ? "Pagamento Concluído"
+              : "QR-Code Pagamento PIX"}
+          </DrawerTitle>
         </DrawerHeader>
-        <QRCodeBox />
+        {status === "approved" ? <SuccessMessage /> : <QRCodeBox />}
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Fechar</Button>
