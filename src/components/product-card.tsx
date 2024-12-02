@@ -66,9 +66,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
       ) : (
         <Card className="max-w-[293px] justify-between flex flex-col">
-          <CardHeader className="min-h-[246px]">
+          <CardHeader className="h-[246px]">
             <Image
-              className="max-h-[153px] object-cover rounded-sm"
+              className="h-[153px] object-cover rounded-sm"
               loader={myLoader}
               src={product?.imageURL || placeholderImage}
               width={253}
