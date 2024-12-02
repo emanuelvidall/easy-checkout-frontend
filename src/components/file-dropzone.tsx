@@ -1,18 +1,21 @@
-import { Upload, XCircle } from "lucide-react"; // XCircle for the remove button
-import React, { useEffect, useState } from "react";
-import { useDropzone } from "react-dropzone";
+"use client";
 
-const thumbsContainer = {
+import { Upload, XCircle } from "lucide-react";
+import React, { CSSProperties } from "react";
+import { useDropzone } from "react-dropzone";
+import Image from "next/image";
+
+const thumbsContainer: CSSProperties = {
   display: "flex",
   flexDirection: "row",
   flexWrap: "wrap",
   marginTop: 16,
 };
 
-const thumb = {
+const thumb: CSSProperties = {
   position: "relative",
-  display: "inline-flex",
-  borderRadius: 2,
+  display: "inline-block",
+  borderRadius: 4,
   border: "1px solid #eaeaea",
   marginBottom: 8,
   marginRight: 8,
@@ -22,32 +25,35 @@ const thumb = {
   boxSizing: "border-box",
 };
 
-const thumbInner = {
+const thumbInner: CSSProperties = {
   display: "flex",
-  alignItems: "center",
   justifyContent: "center",
-  width: "100%",
-  height: "100%",
+  alignItems: "center",
   overflow: "hidden",
-  backgroundColor: "#f9f9f9",
 };
 
-const img = {
-  maxWidth: "100%",
-  maxHeight: "100%",
-};
-
-const removeButton = {
+const removeButton: CSSProperties = {
   position: "absolute",
-  top: 4,
-  right: 4,
+  top: 5,
+  right: 5,
   cursor: "pointer",
-  color: "#f44336",
-  backgroundColor: "white",
+  color: "white",
+  backgroundColor: "red",
   borderRadius: "50%",
 };
 
-export function FileDropzone({ field }) {
+interface ExtendedFile extends File {
+  preview: string;
+}
+
+interface FileDropzoneProps {
+  field: {
+    value?: (File | ExtendedFile)[];
+    onChange: (file: ExtendedFile[]) => void;
+  };
+}
+
+export function FileDropzone({ field }: FileDropzoneProps) {
   const { getRootProps, getInputProps } = useDropzone({
     maxFiles: 1,
     maxSize: 5242880, // 5MB
@@ -56,10 +62,10 @@ export function FileDropzone({ field }) {
       "image/png": [],
     },
     onDrop: (acceptedFiles) => {
-      const fileWithPreview = acceptedFiles.map((file) =>
+      const filesWithPreviews = acceptedFiles.map((file) =>
         Object.assign(file, { preview: URL.createObjectURL(file) })
-      );
-      field.onChange(fileWithPreview);
+      ) as ExtendedFile[];
+      field.onChange(filesWithPreviews);
     },
   });
 
@@ -67,24 +73,30 @@ export function FileDropzone({ field }) {
     field.onChange([]);
   };
 
-  const thumbs = (field.value || []).map((file) => (
-    <div style={thumb} key={file.name}>
-      <div style={thumbInner}>
-        <img
-          src={file.preview}
-          style={img}
-          alt="Preview"
-          onLoad={() => URL.revokeObjectURL(file.preview)}
+  const thumbs = (field.value || []).map((file) => {
+    const preview =
+      "preview" in file ? file.preview : URL.createObjectURL(file);
+    return (
+      <div style={thumb} key={file.name}>
+        <div style={thumbInner}>
+          <Image
+            src={preview}
+            alt="Preview"
+            width={100}
+            height={100}
+            objectFit="contain"
+            onLoadingComplete={() => URL.revokeObjectURL(preview)}
+          />
+        </div>
+        <XCircle
+          style={removeButton}
+          onClick={handleRemoveImage}
+          size={20}
+          aria-label="Remove Image"
         />
       </div>
-      <XCircle
-        style={removeButton}
-        onClick={handleRemoveImage}
-        size={20}
-        title="Remove image"
-      />
-    </div>
-  ));
+    );
+  });
 
   return (
     <section className="flex flex-col container max-h-[127px] h-full w-full self-center bg-gray-200 items-center justify-center border-[#039ADC] border-2 border-dashed cursor-pointer">

@@ -9,7 +9,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Drawer,
@@ -19,11 +18,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { CreditCard } from "lucide-react";
 import Image from "next/image";
 
 interface PaymentDrawerProps {
@@ -33,7 +28,7 @@ interface PaymentDrawerProps {
     id: string;
     qrCode: string;
     qrCodeBase64: string;
-  };
+  } | null;
 }
 
 export function PaymentDrawer({
@@ -53,7 +48,7 @@ export function PaymentDrawer({
               Aponte seu celular para o código abaixo para realizar o pagamento
             </DialogDescription>
           </DialogHeader>
-          <QRCodeBox className="px-4" paymentData={paymentData} />
+          <QRCodeBox className="px-4" paymentData={paymentData ?? undefined} />
         </DialogContent>
       </Dialog>
     );
@@ -68,7 +63,7 @@ export function PaymentDrawer({
             Aponte seu celular para o código abaixo para realizar o pagamento
           </DrawerDescription>
         </DrawerHeader>
-        <QRCodeBox className="px-4" paymentData={paymentData} />
+        <QRCodeBox className="px-4" paymentData={paymentData ?? undefined} />
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Fechar</Button>

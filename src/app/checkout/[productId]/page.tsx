@@ -78,6 +78,7 @@ export default function CheckoutPage() {
   });
 
   const onSubmit = async (values: CheckoutFormType) => {
+    setIsSubmitting(true);
     if (!product?.price) {
       toast.error("O preço do produto não está disponível.");
       return;

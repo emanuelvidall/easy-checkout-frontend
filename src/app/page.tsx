@@ -7,7 +7,7 @@ import { scrollToTop } from "@/lib/utils";
 import { ProductService } from "@/services/product.service";
 import { CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,10 +24,6 @@ export default function Home() {
     scrollToTop();
     fetchProducts();
   }, []);
-
-  const handleAddProduct = (newProduct: Product) => {
-    setProducts((prevProducts) => [newProduct, ...prevProducts]);
-  };
 
   const handleDeleteProduct = async (productId: string) => {
     try {
@@ -68,6 +64,8 @@ export default function Home() {
         setIsOpen={setIsOpen}
         product={selectedProduct}
         onSave={handleSaveProduct}
+        isLoading={isLoading}
+        setProducts={setProducts}
       />
       <div className="flex w-full flex-col h-full">
         <div className="flex flex-row justify-between">

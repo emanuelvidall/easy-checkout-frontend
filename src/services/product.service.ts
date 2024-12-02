@@ -1,6 +1,5 @@
 import client from "@/lib/apollo-client";
 import axiosInstance from "@/lib/axios-instance";
-import { Product } from "@/components/product-card-grid";
 import {
   CREATE_PRODUCT,
   DELETE_PRODUCT,

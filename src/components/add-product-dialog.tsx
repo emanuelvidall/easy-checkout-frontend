@@ -53,7 +53,7 @@ interface AddProductDialogComponentProps {
     description: string;
     price: number;
     imageURL: string;
-  };
+  } | null;
   onSave: (product: Product) => void;
 }
 
@@ -150,7 +150,7 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
       }
 
       onSave({
-        id: productId,
+        id: productId || "",
         ...productInput,
         imageURL: imageUrl,
       });
