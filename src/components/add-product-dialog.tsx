@@ -120,7 +120,7 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
 
       let productId = product?.id;
 
-      if (product) {
+      if (product && productId) {
         await ProductService.updateProduct(productId, productInput);
         toast.success("Produto atualizado com sucesso!");
       } else {

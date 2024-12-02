@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Lock } from "lucide-react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -199,6 +199,26 @@ export default function CheckoutPage() {
                   </Button>
                 </form>
               </Form>
+              <div className="flex flex-row items-center gap-2">
+                <Lock width={16} height={16} className="opacity-50" />
+                <p className="text-xs opacity-50 text-center mt-4 mb-4">
+                  Ambiente criptografado e 100% seguro.
+                </p>
+              </div>
+              <div className="flex flex-row justify-between items-center">
+                <Image
+                  src={"/BIGcompra 1.png"}
+                  width={122}
+                  height={62}
+                  alt="Compra segura"
+                />
+                <Image
+                  src={"/BIGcompra 2.png"}
+                  width={122}
+                  height={62}
+                  alt="Compra segura"
+                />
+              </div>
             </TabsContent>
           </Tabs>
         </div>

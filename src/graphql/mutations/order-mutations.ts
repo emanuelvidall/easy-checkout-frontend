@@ -17,3 +17,22 @@ export const CREATE_ORDER = gql`
     }
   }
 `;
+
+export const GET_ORDERS = gql`
+  query GetOrders {
+    getOrders {
+      id
+      product {
+        id
+        name
+        description
+        price
+        imageURL
+        createdAt
+      }
+      quantity
+      status
+      createdAt
+    }
+  }
+`;
