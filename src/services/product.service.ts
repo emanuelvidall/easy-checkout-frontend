@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import client from "@/lib/apollo-client";
 import axiosInstance from "@/lib/axios-instance";
+import { Product } from "@/components/product-card-grid";
 
 const GET_PRODUCTS = gql`
   query GetProducts {
@@ -48,9 +49,14 @@ const DELETE_PRODUCT = gql`
 const uploadImageUrl = "upload/product-image/";
 
 export class ProductService {
-  static async fetchProducts() {
+  static async getProducts() {
     const { data } = await client.query({ query: GET_PRODUCTS });
     return data.getProducts;
+  }
+
+  static async getProductById(productId: string) {
+    const products = await this.getProducts();
+    return products.find((product: Product) => product.id === productId);
   }
 
   static async uploadImage(file: File, productId: string) {

@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "./ui/button";
 import Image from "next/image";
-import Banner from "../../public/temp/card-test-banner.png";
 import Link from "next/link";
 import { Product } from "./product-card-grid";
 
@@ -48,6 +47,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
 
+  const placeholderImage = "https://placehold.co/253x153";
+
   const price = product.price.toLocaleString("pt-BR");
 
   return (
@@ -56,7 +57,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <Image
           className="max-h-[153px] object-cover rounded-sm"
           loader={myLoader}
-          src={`${product?.imageURL}` || "https://placehold.co/253x153"}
+          src={product?.imageURL || placeholderImage}
           width={253}
           height={153}
           quality={75}
@@ -80,7 +81,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <CardContent className="flex flex-col gap-2">
         <p>Link para checkout 🛒</p>
         <div className="w-full flex flex-col justify-center h-10 p-3 border-dashed border border-[#039ADC]">
-          <Link href={"/"}> link.com </Link>
+          <Link href={`/checkout/${product.id}`}> link.com </Link>
         </div>
       </CardContent>
       <CardFooter className="flex flex-row justify-between gap-4 items-center">

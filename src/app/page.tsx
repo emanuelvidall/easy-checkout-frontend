@@ -17,7 +17,7 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchProducts() {
-      const data = await ProductService.fetchProducts();
+      const data = await ProductService.getProducts();
       setProducts(data);
     }
 
