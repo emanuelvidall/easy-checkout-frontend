@@ -63,7 +63,7 @@ export default function Home() {
   };
 
   return (
-    <div className="p-4 w-full h-screen">
+    <div className="py-4 w-full h-screen pr-[27px]">
       <AddProductDialog
         isOpen={isOpen}
         setIsOpen={setIsOpen}

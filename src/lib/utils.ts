@@ -36,3 +36,13 @@ export const scrollToTop = (smooth: boolean = true): void => {
     behavior: smooth ? "smooth" : "auto",
   });
 };
+
+export function enforceCPFMaxLength(value: string): string {
+  const numericValue = value.replace(/\D/g, "");
+  const truncatedValue = numericValue.slice(0, 11);
+  return truncatedValue;
+}
+
+export function enforcePhoneMaxLength(value: string): string {
+  return value.slice(0, 11);
+}

@@ -29,6 +29,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { OrderService } from "@/services/order.service";
 import { toast } from "sonner";
+import { PaymentDrawer } from "@/components/payment-drawer";
+import { enforceCPFMaxLength, enforcePhoneMaxLength } from "@/lib/utils";
 
 type CheckoutFormType = z.infer<typeof checkoutSchema>;
 
@@ -37,6 +39,7 @@ export default function CheckoutPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const form = useForm<CheckoutFormType>({
     resolver: zodResolver(checkoutSchema),
@@ -61,6 +64,7 @@ export default function CheckoutPage() {
         status: "PENDING",
       });
       toast.success("Compra realizada com sucesso!");
+      setIsOpen(true);
     } catch (error) {
       console.error("Failed to create order:", error);
       toast.error("Falha ao realizar a compra");
@@ -78,7 +82,8 @@ export default function CheckoutPage() {
   }, [productId]);
 
   return (
-    <div className="p-4 w-full h-screen flex items-center justify-center">
+    <div className="py-4 w-full h-screen flex items-center justify-center pr-[27px]">
+      <PaymentDrawer open={isOpen} setOpen={setIsOpen} />
       <div className="flex w-full justify-center items-center bg-[#ebecf1] rounded-lg p-8">
         <div className="bg-white max-w-[385px] h-full rounded-xl p-8">
           <h1 className="text-2xl">Dados da Compra</h1>
@@ -153,12 +158,21 @@ export default function CheckoutPage() {
                             placeholder="000.000.000-00"
                             {...field}
                             onChange={(e) => {
-                              const value = e.target.value
-                                .replace(/\D/g, "")
+                              const rawValue = e.target.value.replace(
+                                /\D/g,
+                                ""
+                              );
+                              const limitedValue =
+                                enforceCPFMaxLength(rawValue);
+
+                              // Apply formatting
+                              const formattedValue = limitedValue
                                 .replace(/(\d{3})(\d)/, "$1.$2")
                                 .replace(/(\d{3})(\d)/, "$1.$2")
                                 .replace(/(\d{3})(\d{2})$/, "$1-$2");
-                              field.onChange(value);
+
+                              // Update the field
+                              field.onChange(formattedValue);
                             }}
                           />
                         </FormControl>
@@ -197,11 +211,20 @@ export default function CheckoutPage() {
                             placeholder="(00) 00000-0000"
                             {...field}
                             onChange={(e) => {
-                              const value = e.target.value
-                                .replace(/\D/g, "")
+                              const rawValue = e.target.value.replace(
+                                /\D/g,
+                                ""
+                              );
+                              const limitedValue =
+                                enforcePhoneMaxLength(rawValue);
+
+                              // Apply formatting
+                              const formattedValue = limitedValue
                                 .replace(/(\d{2})(\d)/, "($1) $2")
                                 .replace(/(\d{4,5})(\d{4})$/, "$1-$2");
-                              field.onChange(value);
+
+                              // Update the field
+                              field.onChange(formattedValue);
                             }}
                           />
                         </FormControl>
@@ -222,10 +245,13 @@ export default function CheckoutPage() {
                     className="w-full bg-[#039ADC] hover:bg-gray-500"
                   >
                     {isSubmitting ? (
-                      <>
+                      <div
+                        className="flex flex-row items-center justify-center gap-2"
+                        onClick={() => setIsOpen(true)}
+                      >
                         <Loader2 className="animate-spin" />{" "}
                         <p>Processando...</p>
-                      </>
+                      </div>
                     ) : (
                       "Realizar pagamento"
                     )}
