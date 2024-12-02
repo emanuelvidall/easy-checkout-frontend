@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CreditCard, Lock } from "lucide-react";
+import { CreditCard, Loader2, Lock } from "lucide-react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,6 +27,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { OrderService } from "@/services/order.service";
+import { toast } from "sonner";
 
 type CheckoutFormType = z.infer<typeof checkoutSchema>;
 
@@ -34,6 +36,7 @@ export default function CheckoutPage() {
   const { productId } = useParams<{ productId: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const form = useForm<CheckoutFormType>({
     resolver: zodResolver(checkoutSchema),
@@ -46,7 +49,22 @@ export default function CheckoutPage() {
   });
 
   async function onSubmit(values: CheckoutFormType) {
-    console.log("Form Values:", values);
+    try {
+      setIsSubmitting(true);
+      const order = await OrderService.createOrder({
+        customerName: values.nome,
+        customerPhone: values.telefone,
+        customerCPF: values.cpf,
+        customerEmail: values.email,
+        productId: productId,
+        paymentMethod: "PIX",
+        status: "PENDING",
+      });
+      toast.success("Compra realizada com sucesso!");
+    } catch (error) {
+      console.error("Failed to create order:", error);
+      toast.error("Falha ao realizar a compra");
+    }
   }
 
   useEffect(() => {
@@ -112,6 +130,7 @@ export default function CheckoutPage() {
                         <FormLabel>Nome</FormLabel>
                         <FormControl>
                           <Input
+                            disabled={isSubmitting}
                             placeholder="Digite seu nome"
                             {...field}
                             maxLength={50}
@@ -130,6 +149,7 @@ export default function CheckoutPage() {
                         <FormLabel>CPF</FormLabel>
                         <FormControl>
                           <Input
+                            disabled={isSubmitting}
                             placeholder="000.000.000-00"
                             {...field}
                             onChange={(e) => {
@@ -154,7 +174,11 @@ export default function CheckoutPage() {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="exemplo@email.com" {...field} />
+                          <Input
+                            disabled={isSubmitting}
+                            placeholder="exemplo@email.com"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -169,6 +193,7 @@ export default function CheckoutPage() {
                         <FormLabel>Telefone</FormLabel>
                         <FormControl>
                           <Input
+                            disabled={isSubmitting}
                             placeholder="(00) 00000-0000"
                             {...field}
                             onChange={(e) => {
@@ -192,10 +217,18 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <Button
+                    disabled={isSubmitting}
                     type="submit"
                     className="w-full bg-[#039ADC] hover:bg-gray-500"
                   >
-                    Realizar Pagamento
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="animate-spin" />{" "}
+                        <p>Processando...</p>
+                      </>
+                    ) : (
+                      "Realizar pagamento"
+                    )}
                   </Button>
                 </form>
               </Form>
