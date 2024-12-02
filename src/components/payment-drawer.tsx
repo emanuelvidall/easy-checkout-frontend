@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
@@ -31,12 +31,9 @@ interface PaymentDrawerProps {
   } | null;
 }
 
-export function PaymentDrawer({
-  open,
-  setOpen,
-  paymentData,
-}: PaymentDrawerProps) {
+export function PaymentDrawer({ open, paymentData }: PaymentDrawerProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  const router = useRouter();
   const [status, setStatus] = useState<string>("PENDING");
 
   useEffect(() => {
@@ -50,16 +47,18 @@ export function PaymentDrawer({
         setStatus(newStatus);
 
         if (newStatus === "approved") {
-          setOpen(true);
+          setTimeout(() => {
+            router.push("/");
+          }, 3000);
         }
       } catch (error) {
         console.error("Error polling payment status:", error);
       }
     };
 
-    const interval = setInterval(pollPaymentStatus, 5000);
+    const interval = setInterval(pollPaymentStatus, 3000);
     return () => clearInterval(interval);
-  }, [paymentData?.id, status, setOpen]);
+  }, [paymentData?.id, status, router]);
 
   const QRCodeBox = () => {
     if (!paymentData || !paymentData.qrCodeBase64) {
@@ -101,7 +100,7 @@ export function PaymentDrawer({
 
   if (isDesktop) {
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={() => {}} modal>
         <DialogContent className="sm:max-w-[425px] flex flex-col justify-center items-center">
           <DialogHeader>
             <DialogTitle>
@@ -117,7 +116,7 @@ export function PaymentDrawer({
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={() => {}}>
       <DrawerContent className="flex flex-col justify-center items-center">
         <DrawerHeader className="text-left">
           <DrawerTitle>
@@ -128,9 +127,9 @@ export function PaymentDrawer({
         </DrawerHeader>
         {status === "approved" ? <SuccessMessage /> : <QRCodeBox />}
         <DrawerFooter className="pt-2">
-          <DrawerClose asChild>
-            <Button variant="outline">Fechar</Button>
-          </DrawerClose>
+          <Button variant="outline" disabled={status === "approved"}>
+            Fechar
+          </Button>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
