@@ -10,6 +10,7 @@ export default function OrdersPage() {
 
   useEffect(() => {
     async function fetchOrders() {
+      console.log("Fetching orders...");
       try {
         const ordersData = await OrderService.getOrders();
         setOrders(ordersData);
@@ -27,7 +28,7 @@ export default function OrdersPage() {
     <div className="w-full px-8 h-full justify-center items-center flex flex-col">
       <h1 className="text-xl font-semibold mb-4">Vendas</h1>
       {isLoading ? (
-        <p>Loading...</p>
+        <p>Carregando...</p>
       ) : (
         <SalesTable
           sales={orders.map((order) => ({
