@@ -32,7 +32,7 @@ interface PaymentDrawerProps {
   paymentData: {
     id: string;
     qrCode: string;
-    qrCodeImage: string;
+    qrCodeBase64: string;
   };
 }
 
@@ -48,12 +48,12 @@ export function PaymentDrawer({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px] flex flex-col justify-center items-center">
           <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
+            <DialogTitle>QR-Code Pagamento PIX</DialogTitle>
             <DialogDescription>
-              Make changes to your profile here. Click save when done.
+              Aponte seu celular para o código abaixo para realizar o pagamento
             </DialogDescription>
           </DialogHeader>
-          <ProfileForm />
+          <QRCodeBox className="px-4" paymentData={paymentData} />
         </DialogContent>
       </Dialog>
     );
@@ -68,7 +68,7 @@ export function PaymentDrawer({
             Aponte seu celular para o código abaixo para realizar o pagamento
           </DrawerDescription>
         </DrawerHeader>
-        <ProfileForm className="px-4" paymentData={paymentData} />
+        <QRCodeBox className="px-4" paymentData={paymentData} />
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Fechar</Button>
@@ -79,13 +79,36 @@ export function PaymentDrawer({
   );
 }
 
-function ProfileForm({ className, paymentData }) {
+function QRCodeBox({
+  className,
+  paymentData,
+}: {
+  className?: string;
+  paymentData?: { qrCodeBase64?: string };
+}) {
+  if (!paymentData || !paymentData.qrCodeBase64) {
+    return (
+      <div className="w-[355px] h-[290px] border-2 border-dashed rounded-md border-slate-500 flex items-center justify-center">
+        <p className="text-center text-sm text-slate-500">
+          Carregando QR Code...
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-[355px] h-[290px] border-2 border-dashed rounded-md border-slate-500 flex items-center justify-center">
+    <div
+      className={cn(
+        "w-[355px] h-[290px] border-2 border-dashed rounded-md border-slate-500 flex items-center justify-center",
+        className
+      )}
+    >
       <div>
         <Image
-          src={`data:image/png;base64,${paymentData.qrCodeImage}`}
+          src={`data:image/png;base64,${paymentData.qrCodeBase64}`}
           alt="QR Code"
+          width={200}
+          height={200}
         />
       </div>
     </div>

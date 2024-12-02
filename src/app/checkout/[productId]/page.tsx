@@ -48,7 +48,7 @@ export default function CheckoutPage() {
   const [paymentData, setPaymentData] = useState<{
     id: string;
     qrCode: string;
-    qrCodeImage: string;
+    qrCodeBase64: string;
   } | null>(null);
 
   const createPaymentUrl = "/payment/create";
@@ -58,12 +58,19 @@ export default function CheckoutPage() {
     cpf: string;
     email: string;
     phone: string;
+    price: number;
   }) {
+    if (!details.price) {
+      console.error("Price is missing in payment details");
+      return;
+    }
+
     try {
       const response = await axiosInstance.post(createPaymentUrl, details);
       setPaymentData(response.data.payment);
     } catch (error) {
       console.error("Error creating payment:", error);
+      toast.error("Erro ao criar pagamento.");
     }
   }
 
@@ -78,12 +85,18 @@ export default function CheckoutPage() {
   });
 
   const onSubmit = async (values: CheckoutFormType) => {
+    if (!product?.price) {
+      toast.error("O preço do produto não está disponível.");
+      return;
+    }
+
     try {
       createPayment({
         name: values.nome,
         cpf: values.cpf,
         email: values.email,
         phone: values.telefone,
+        price: product.price,
       });
       setIsOpen(true);
     } catch (error) {
@@ -129,22 +142,13 @@ export default function CheckoutPage() {
                 />
                 <p className="">PIX</p>
               </TabsTrigger>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <TabsTrigger
-                      className="items-center justify-center flex gap-2"
-                      disabled
-                      value="creditcard"
-                    >
-                      <CreditCard width={16} height={16} /> Cartão
-                    </TabsTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Indisponível no momento</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <TabsTrigger
+                className="items-center justify-center flex gap-2"
+                disabled
+                value="creditcard"
+              >
+                <CreditCard width={16} height={16} /> Cartão
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="pix">
               <Form {...form}>
