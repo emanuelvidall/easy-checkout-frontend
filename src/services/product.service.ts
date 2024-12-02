@@ -1,50 +1,12 @@
-import { gql } from "@apollo/client";
 import client from "@/lib/apollo-client";
 import axiosInstance from "@/lib/axios-instance";
 import { Product } from "@/components/product-card-grid";
-
-const GET_PRODUCTS = gql`
-  query GetProducts {
-    getProducts {
-      id
-      name
-      description
-      price
-      imageURL
-    }
-  }
-`;
-
-const CREATE_PRODUCT = gql`
-  mutation CreateProduct($input: CreateProductInput!) {
-    createProduct(createProductInput: $input) {
-      id
-      name
-      description
-      price
-      imageURL
-      createdAt
-    }
-  }
-`;
-
-const UPDATE_PRODUCT = gql`
-  mutation updateProduct($id: String!, $input: UpdateProductInput!) {
-    updateProduct(id: $id, updateProductInput: $input) {
-      id
-      name
-      description
-      price
-      imageURL
-    }
-  }
-`;
-
-const DELETE_PRODUCT = gql`
-  mutation deleteProduct($productId: ID!) {
-    deleteProduct(productId: $productId)
-  }
-`;
+import {
+  CREATE_PRODUCT,
+  DELETE_PRODUCT,
+  GET_PRODUCTS,
+  UPDATE_PRODUCT,
+} from "@/graphql/mutations/product-mutations";
 
 const uploadImageUrl = "upload/product-image/";
 
@@ -55,6 +17,7 @@ export class ProductService {
   }
 
   static async getProductById(productId: string) {
+    console.log("calling");
     const products = await this.getProducts();
     return products.find((product: Product) => product.id === productId);
   }

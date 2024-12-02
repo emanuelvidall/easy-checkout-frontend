@@ -33,6 +33,7 @@ import { ProductService } from "@/services/product.service";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { Product } from "./product-card-grid";
+import { addProductFormSchema } from "@/lib/validation";
 
 type formType = {
   name: string;
@@ -56,35 +57,6 @@ interface AddProductDialogComponentProps {
   onSave: (product: Product) => void;
 }
 
-const formSchema = z.object({
-  name: z.string().optional(),
-  description: z.string().optional(),
-  imageFiles: z.array(z.instanceof(File)).optional(),
-  price: z
-    .string()
-    .optional()
-    .refine(
-      (value) => {
-        if (!value) return true;
-        const numericValue = parseFloat(
-          value.replace(/[^\d,]/g, "").replace(",", ".")
-        );
-        return numericValue >= 1;
-      },
-      { message: "O preço deve ser no mínimo R$ 1,00" }
-    )
-    .refine(
-      (value) => {
-        if (!value) return true;
-        const numericValue = parseFloat(
-          value.replace(/[^\d,]/g, "").replace(",", ".")
-        );
-        return numericValue <= 999999;
-      },
-      { message: "O preço deve ser no máximo R$ 899.999,00" }
-    ),
-});
-
 export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
   isOpen,
   setIsOpen,
@@ -95,7 +67,7 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
   const [textAreaCharCount, setTextAreaCharCount] = useState(0);
 
   const form = useForm<formType>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(addProductFormSchema),
     defaultValues: product
       ? {
           name: product.name || "",
@@ -130,7 +102,7 @@ export const AddProductDialog: React.FC<AddProductDialogComponentProps> = ({
     }
   }, [product, form]);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof addProductFormSchema>) {
     setIsPosting(true);
     try {
       const price = values.price
