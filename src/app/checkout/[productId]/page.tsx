@@ -30,7 +30,11 @@ import { Separator } from "@/components/ui/separator";
 import { OrderService } from "@/services/order.service";
 import { toast } from "sonner";
 import { PaymentDrawer } from "@/components/payment-drawer";
-import { enforceCPFMaxLength, enforcePhoneMaxLength } from "@/lib/utils";
+import {
+  enforceCPFMaxLength,
+  enforcePhoneMaxLength,
+  handleTextMaxLength,
+} from "@/lib/utils";
 
 type CheckoutFormType = z.infer<typeof checkoutSchema>;
 
@@ -63,7 +67,6 @@ export default function CheckoutPage() {
         paymentMethod: "PIX",
         status: "PENDING",
       });
-      toast.success("Compra realizada com sucesso!");
       setIsOpen(true);
     } catch (error) {
       console.error("Failed to create order:", error);
@@ -139,6 +142,13 @@ export default function CheckoutPage() {
                             placeholder="Digite seu nome"
                             {...field}
                             maxLength={50}
+                            onChange={(e) => {
+                              const truncatedValue = handleTextMaxLength(
+                                e.target.value,
+                                100
+                              );
+                              field.onChange(truncatedValue);
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -165,13 +175,10 @@ export default function CheckoutPage() {
                               const limitedValue =
                                 enforceCPFMaxLength(rawValue);
 
-                              // Apply formatting
                               const formattedValue = limitedValue
                                 .replace(/(\d{3})(\d)/, "$1.$2")
                                 .replace(/(\d{3})(\d)/, "$1.$2")
                                 .replace(/(\d{3})(\d{2})$/, "$1-$2");
-
-                              // Update the field
                               field.onChange(formattedValue);
                             }}
                           />
@@ -192,6 +199,13 @@ export default function CheckoutPage() {
                             disabled={isSubmitting}
                             placeholder="exemplo@email.com"
                             {...field}
+                            onChange={(e) => {
+                              const truncatedValue = handleTextMaxLength(
+                                e.target.value,
+                                50
+                              );
+                              field.onChange(truncatedValue);
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -218,12 +232,10 @@ export default function CheckoutPage() {
                               const limitedValue =
                                 enforcePhoneMaxLength(rawValue);
 
-                              // Apply formatting
                               const formattedValue = limitedValue
                                 .replace(/(\d{2})(\d)/, "($1) $2")
                                 .replace(/(\d{4,5})(\d{4})$/, "$1-$2");
 
-                              // Update the field
                               field.onChange(formattedValue);
                             }}
                           />
