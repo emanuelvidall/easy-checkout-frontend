@@ -34,7 +34,6 @@ export default function RootLayout({
       <body>
         <SidebarProvider>
           <AppSidebar />
-          <SidebarTrigger />
           <Toaster richColors position="top-center" />
           {children}
         </SidebarProvider>

@@ -1,6 +1,7 @@
 "use client";
 
 import { AddProductDialog } from "@/components/add-product-dialog";
+import { BreadCrumBar } from "@/components/bread-crumb-bar";
 import { Product, ProductCardGrid } from "@/components/product-card-grid";
 import { Button } from "@/components/ui/button";
 import { scrollToTop } from "@/lib/utils";
@@ -59,7 +60,8 @@ export default function Home() {
   };
 
   return (
-    <div className="py-4 w-full h-screen pr-[27px]">
+    <div className="p-8 w-full h-screen pr-[27px]">
+      <BreadCrumBar />
       <AddProductDialog
         isOpen={isOpen}
         setIsOpen={setIsOpen}
@@ -70,9 +72,14 @@ export default function Home() {
       />
       <div className="flex w-full flex-col h-full">
         <div className="flex flex-row justify-between">
-          <h1 className="text-3xl mb-8">Produtos</h1>
+          <div className="flex flex-col gap-2 mb-4">
+            <h1 className="text-3xl">Produtos</h1>
+            <p className="text-gray-500 text-sm">
+              Lista de produtos registrados
+            </p>
+          </div>
           <Button
-            className="bg-[#039ADC] hover:bg-gray-500"
+            className="bg-[#039ADC] hover:bg-[#2868c7]"
             onClick={() => {
               setIsOpen(true);
               setSelectedProduct(null);
@@ -82,7 +89,6 @@ export default function Home() {
             <span className="text-white">Adicionar produto</span>
           </Button>
         </div>
-
         <ProductCardGrid
           isLoading={isLoading}
           setIsOpen={setIsOpen}

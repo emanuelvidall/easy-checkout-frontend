@@ -11,6 +11,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { Product } from "./product-card-grid";
 import { Skeleton } from "./ui/skeleton";
+import { FilePen, Trash2 } from "lucide-react";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import { useState } from "react";
 
 interface ProductCardProps {
   product: {
@@ -35,21 +49,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     return `${product.imageURL}`;
   };
 
-  const nameElipsis = (text: string) => {
-    if (text.length > 32) {
-      return `${text.slice(0, 32)}...`;
-    } else {
-      return text;
-    }
-  };
-  const descriptionElipsis = (text: string) => {
-    if (text.length > 36) {
-      return `${text.slice(0, 36)}...`;
-    } else {
-      return text;
-    }
-  };
-
   const placeholderImage = "https://placehold.co/253x153";
 
   const price = product.price.toLocaleString("pt-BR");
@@ -65,10 +64,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
       ) : (
-        <Card className="max-w-[293px] justify-between flex flex-col">
-          <CardHeader className="h-[246px]">
+        <Card className="w-[279px] justify-between flex flex-col border-slate-500 border-border rounded-2xl drop-shadow-none shadow-none ">
+          <CardHeader className="w-full max-w-[600px]">
             <Image
-              className="h-[153px] object-cover rounded-sm"
+              className="w-full h-[153px] object-cover rounded-sm"
               loader={myLoader}
               src={product?.imageURL || placeholderImage}
               width={253}
@@ -79,38 +78,73 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               alt="banner do card"
               loading="lazy"
             />
-            <CardTitle className="flex flex-row justify-between items-start min-h-[48px]">
-              <div className="w-7/12 break-all">
-                <p className="text-[#101827]">{nameElipsis(product.name)}</p>
+            <CardTitle className="flex flex-row justify-between items-start">
+              <div className="truncate">
+                <p className="text-[#101827] font-bold text-xl truncate tracking-wide">
+                  {product.name}
+                </p>
               </div>
-              <div className="flex flex-col justify-center">
-                <p className="text-sm font-bold opacity-60">R$ {price}</p>
+              <div className="flex flex-col min-w-[100px]">
+                <p className="text-sm font-bold opacity-60 text-right">
+                  R$ {price}
+                </p>
               </div>
             </CardTitle>
-            <CardDescription className="break-all min-h-[40px]">
-              {descriptionElipsis(product.description)}
+            <CardDescription className="truncate">
+              <p className="truncate text-base tracking-wide">
+                {product.description}
+              </p>
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <p>Link para checkout 🛒</p>
-            <div className="w-full flex flex-col justify-center h-10 p-3 border-dashed border border-[#039ADC]">
-              <Link href={`/checkout/${product.id}`}> link.com </Link>
-            </div>
+            <Button
+              className="w-full bg-[#039ADC] hover:bg-[#2868c7]"
+              size="lg"
+            >
+              <Link href={`/checkout/${product.id}`} className="font-semibold">
+                Comprar agora
+              </Link>
+            </Button>
           </CardContent>
           <CardFooter className="flex flex-row justify-between gap-4 items-center">
             <Button
-              className="bg-[#E4AF00] w-1/2"
+              className="bg-[#e3edfb] text-[#3483fa] hover:bg-[#dbe7fb] font-semibold w-full"
               onClick={() => onEdit(product)}
             >
-              Editar
+              <FilePen /> Editar
             </Button>
-            <Button
-              onClick={() => handleDeleteProduct(product.id)}
-              className="w-1/2"
-              variant="destructive"
-            >
-              Excluir
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="w-[36px] rounded-full" variant="destructive">
+                  <Trash2 />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Excluir produto</DialogTitle>
+                  <DialogDescription>
+                    O produto excluído não poderá ser recuperado. Tem certeza
+                    que deseja excluir?
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="sm:justify-start">
+                  <DialogClose asChild>
+                    <Button type="button" variant="secondary">
+                      Voltar
+                    </Button>
+                  </DialogClose>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="px-3 bg-red-500 font-semibold"
+                    variant="destructive"
+                    onClick={() => handleDeleteProduct(product.id)}
+                  >
+                    Excluir Produto
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </CardFooter>
         </Card>
       )}

@@ -44,7 +44,7 @@ export const ProductCardGrid: React.FC<ProductCardGridProps> = ({
       {products.length === 0 ? (
         noProducts
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="flex gap-4 w-full flex-wrap items-center justify-center lg:justify-normal">
           {products.map((product) => (
             <ProductCard
               isLoading={isLoading}
