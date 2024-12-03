@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "./ui/button";
 import Image from "next/image";
-import Link from "next/link";
 import { Product } from "./product-card-grid";
 import { Skeleton } from "./ui/skeleton";
 import { FilePen, Trash2 } from "lucide-react";
@@ -24,7 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
   product: {
@@ -46,12 +45,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   isLoading,
 }) => {
   const myLoader = () => {
-    return `${product.imageURL}`;
+    return `${product.imageURL == "" ? placeholderImage : product?.imageURL}`;
   };
+
+  const router = useRouter();
 
   const placeholderImage = "https://placehold.co/253x153";
 
   const price = product.price.toLocaleString("pt-BR");
+
+  const handleGoToCheckout = () => {
+    router.push(`/checkout/${product.id}`);
+  };
 
   return (
     <div>
@@ -98,12 +103,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             <Button
-              className="w-full bg-[#039ADC] hover:bg-[#2868c7]"
+              className="w-full bg-[#039ADC] hover:bg-[#2868c7] font-semibold"
               size="lg"
+              onClick={handleGoToCheckout}
             >
-              <Link href={`/checkout/${product.id}`} className="font-semibold">
-                Comprar agora
-              </Link>
+              Comprar agora
             </Button>
           </CardContent>
           <CardFooter className="flex flex-row justify-between gap-4 items-center">

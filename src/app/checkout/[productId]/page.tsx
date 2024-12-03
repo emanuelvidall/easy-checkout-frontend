@@ -135,8 +135,8 @@ export default function CheckoutPage() {
             setOpen={setIsOpen}
             paymentData={paymentData}
           />
-          <div className="flex w-full justify-center items-center bg-[#ebecf1] rounded-lg p-8">
-            <div className="bg-white max-w-[385px] h-full rounded-xl p-8">
+          <div className="flex w-full justify-center items-center rounded-lg p-8">
+            <div className="bg-white max-w-[485px] w-full h-full rounded-xl p-8 border-2 border-solid border-slate-200">
               <h1 className="text-2xl">Dados da Compra</h1>
               <p className="text-sm pt-4 font-medium opacity-50">
                 Forneça o dados de pagamento para completar a compra
@@ -306,7 +306,7 @@ export default function CheckoutPage() {
                             <p>Processando...</p>
                           </div>
                         ) : (
-                          "Realizar pagamento"
+                          <p className="font-semibold">Realizar pagamento</p>
                         )}
                       </Button>
                     </form>

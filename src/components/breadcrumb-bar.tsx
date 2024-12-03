@@ -3,15 +3,17 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
 import { House } from "lucide-react";
 import { SidebarTrigger } from "./ui/sidebar";
-import { Separator } from "./ui/separator";
 
-export const BreadCrumBar = () => {
+interface BreadcrumbProps {
+  page: string;
+}
+
+export const BreadCrumBar = ({ page }: BreadcrumbProps) => {
   return (
     <div className="w-full pt-4 pb-4 pr-4">
       <Breadcrumb>
@@ -29,7 +31,7 @@ export const BreadCrumBar = () => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/">Produtos</BreadcrumbLink>
+            <BreadcrumbLink href="/">{page}</BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

@@ -1,7 +1,7 @@
 "use client";
 
 import { AddProductDialog } from "@/components/add-product-dialog";
-import { BreadCrumBar } from "@/components/bread-crumb-bar";
+import { BreadCrumBar } from "@/components/breadcrumb-bar";
 import { Product, ProductCardGrid } from "@/components/product-card-grid";
 import { Button } from "@/components/ui/button";
 import { scrollToTop } from "@/lib/utils";
@@ -61,7 +61,7 @@ export default function Home() {
 
   return (
     <div className="p-8 w-full h-screen pr-[27px]">
-      <BreadCrumBar />
+      <BreadCrumBar page="Produtos" />
       <AddProductDialog
         isOpen={isOpen}
         setIsOpen={setIsOpen}

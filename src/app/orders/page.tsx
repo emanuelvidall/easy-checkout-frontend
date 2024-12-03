@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { SalesTable } from "@/components/sales-table";
 import { Order, OrderService } from "@/services/order.service";
+import { BreadCrumBar } from "@/components/breadcrumb-bar";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -26,7 +27,11 @@ export default function OrdersPage() {
 
   return (
     <div className="w-full px-8 h-full justify-center items-center flex flex-col">
-      <h1 className="text-xl font-semibold mb-4">Vendas</h1>
+      <BreadCrumBar page="Vendas" />
+      <div className="flex self-start flex-col gap-2 mb-4">
+        <h1 className="text-3xl">Lista de Vendas</h1>
+        <p className="text-gray-500 text-sm">Lista de pedidos registrados</p>
+      </div>
       {isLoading ? (
         <p>Carregando...</p>
       ) : (
