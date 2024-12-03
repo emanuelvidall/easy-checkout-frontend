@@ -52,6 +52,7 @@ export default function CheckoutPage() {
     email: string;
     phone: string;
     price: number;
+    productId: string;
   }) {
     if (!details.price) {
       console.error("Price is missing in payment details");
@@ -91,6 +92,7 @@ export default function CheckoutPage() {
         email: values.email,
         phone: values.telefone,
         price: product.price,
+        productId: productId,
       });
       setIsOpen(true);
     } catch (error) {
