@@ -27,9 +27,9 @@ export const addProductFormSchema = z.object({
         const numericValue = parseFloat(
           value.replace(/[^\d,]/g, "").replace(",", ".")
         );
-        return numericValue >= 1;
+        return numericValue >= 0.1;
       },
-      { message: "O preço deve ser no mínimo R$ 1,00" }
+      { message: "O preço deve ser no mínimo R$ 0,10" }
     )
     .refine(
       (value) => {
