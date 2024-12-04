@@ -94,9 +94,13 @@ export function PaymentDrawer({ open, paymentData }: PaymentDrawerProps) {
           <p className="text-center text-sm text-slate-500">
             Aproxime o celular para escanear
           </p>
-          <p className="text-left">
-            PIX copia e cola <Copy width={14} height={14} />
-          </p>
+          <div
+            className="flex flex-row cursor-pointer gap-2 justify-start items-center"
+            onClick={handleCopyToClipboard}
+          >
+            <Copy width={14} height={14} />
+            <p className="text-left">PIX copia e cola</p>
+          </div>
           <div
             className="w-[240px] border border-border border-dashed rounded-sm border-blue-500 truncate"
             onClick={handleCopyToClipboard}
