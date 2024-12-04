@@ -96,7 +96,7 @@ export function PaymentDrawer({ open, paymentData }: PaymentDrawerProps) {
           </p>
           <p>Copia e Cola</p>
           <div
-            className="border border-border border-dashed rounded-sm border-blue-500"
+            className="w-[240px] border border-border border-dashed rounded-sm border-blue-500 truncate"
             onClick={handleCopyToClipboard}
           >
             <p className="text-center text-sm text-slate-500 truncate">

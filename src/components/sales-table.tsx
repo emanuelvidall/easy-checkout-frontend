@@ -53,16 +53,12 @@ export const SalesTable: React.FC<SalesTableProps> = ({ sales }) => {
             {sale.status === "PENDING" ? (
               <TableCell>
                 <div className="bg-[#ffedd5] mt-1 rounded-md p-1 flex items-center justify-center">
-                  <p className="text-[#c13d04] text-xs capitalize">
-                    {sale.status.toLowerCase()}
-                  </p>
+                  <p className="text-[#c13d04] text-xs capitalize">pendente</p>
                 </div>
               </TableCell>
             ) : (
-              <TableCell className="bg-[#ecfdcb] rounded-md p-1 flex items-center justify-center">
-                <p className="text-[#4d7c0c] text-xs capitalize">
-                  {sale.status.toLowerCase()}
-                </p>
+              <TableCell className="bg-[#ecfdcb] mt-1 rounded-md p-1 flex items-center justify-center">
+                <p className="text-[#4d7c0c] text-xs capitalize">aprovado</p>
               </TableCell>
             )}
             {sale.paymentMethod === "CREDIT_CARD" ? (
