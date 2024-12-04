@@ -20,6 +20,7 @@ import {
 import Image from "next/image";
 import { CheckCircle } from "lucide-react";
 import { PaymentService } from "@/services/payment.service";
+import { toast } from "sonner";
 
 interface PaymentDrawerProps {
   open: boolean;
@@ -36,6 +37,12 @@ export function PaymentDrawer({ open, paymentData }: PaymentDrawerProps) {
   const router = useRouter();
   const [status, setStatus] = useState<string>("PENDING");
 
+  const handleCopyToClipboard = () => {
+    if (!paymentData?.qrCode) return;
+    navigator.clipboard.writeText(paymentData.qrCode);
+    toast("Código copiado para a área de transferência");
+  };
+
   useEffect(() => {
     if (!paymentData?.id || status === "approved") return;
 
@@ -48,7 +55,7 @@ export function PaymentDrawer({ open, paymentData }: PaymentDrawerProps) {
 
         if (newStatus === "approved") {
           setTimeout(() => {
-            router.push("/");
+            router.replace("/");
           }, 3000);
         }
       } catch (error) {
@@ -84,6 +91,18 @@ export function PaymentDrawer({ open, paymentData }: PaymentDrawerProps) {
             width={200}
             height={200}
           />
+          <p className="text-center text-sm text-slate-500">
+            Aproxime o celular para escanear
+          </p>
+          <p>Copia e Cola</p>
+          <div
+            className="border border-border border-dashed rounded-sm border-blue-500"
+            onClick={handleCopyToClipboard}
+          >
+            <p className="text-center text-sm text-slate-500 truncate">
+              {paymentData.qrCode}
+            </p>
+          </div>
         </div>
       </div>
     );
